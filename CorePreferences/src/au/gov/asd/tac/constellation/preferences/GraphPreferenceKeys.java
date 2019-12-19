@@ -36,7 +36,7 @@ public final class GraphPreferenceKeys {
      * Graph Font Settings
      */
     public static final String GRAPH_FONT = "graphFont";
-    public static final String GRAPH_FONT_DEFAULT = "Segoe UI Historic";
+    public static final String GRAPH_FONT_DEFAULT = "Malgun Gothic";
     
     private GraphPreferenceKeys() {
     }

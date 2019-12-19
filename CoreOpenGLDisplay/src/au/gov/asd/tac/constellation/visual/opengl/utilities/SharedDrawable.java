@@ -77,8 +77,7 @@ public final class SharedDrawable {
      * Gothic due to licensing restrictions for the Arial font, resulting in it
      * no longer being made available on Windows 10.
      */
-    //private static final String FONT_NAME = PREFERENCES.get(GraphPreferenceKeys.GRAPH_FONT, "Segoe UI Historic");
-    private static final String FONT_NAME = "Segoe UI Historic";
+    private static final String FONT_NAME = PREFERENCES.get(GraphPreferenceKeys.GRAPH_FONT, GraphPreferenceKeys.GRAPH_FONT_DEFAULT);
     private static final Logger LOGGER = Logger.getLogger(SharedDrawable.class.getName());
 
     /**

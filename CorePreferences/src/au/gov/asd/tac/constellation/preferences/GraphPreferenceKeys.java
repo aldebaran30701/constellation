@@ -32,6 +32,12 @@ public final class GraphPreferenceKeys {
     public static final String BLAZE_SIZE = "blazeSize";
     public static final String BLAZE_OPACITY = "blazeOpacity";
     
+    /**
+     * Graph Font Settings
+     */
+    public static final String GRAPH_FONT = "graphFont";
+    public static final String GRAPH_FONT_DEFAULT = "Segoe UI Historic";
+    
     private GraphPreferenceKeys() {
     }
 }

@@ -15,6 +15,7 @@
  */
 package au.gov.asd.tac.constellation.visual.opengl.utilities;
 
+import au.gov.asd.tac.constellation.preferences.GraphPreferenceKeys;
 import au.gov.asd.tac.constellation.utilities.string.SeparatorConstants;
 import au.gov.asd.tac.constellation.visual.opengl.renderer.GLVisualProcessor;
 import com.jogamp.opengl.DebugGL3;
@@ -31,7 +32,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import javafx.application.Platform;
+import org.openide.util.NbPreferences;
 
 /**
  * Set up a shared GLAutoDrawable to share textures across multiple
@@ -68,12 +71,14 @@ public final class SharedDrawable {
     private static GlyphManagerOpenGLController glyphTextureController;
     private static GlyphManager glyphManager;
 
+    private static final Preferences PREFERENCES = NbPreferences.forModule(GraphPreferenceKeys.class);
     /**
      * The font used by the renderer has changed from Arial Unicode MS to Malgun
      * Gothic due to licensing restrictions for the Arial font, resulting in it
      * no longer being made available on Windows 10.
      */
-    private static final String FONT_NAME = "Malgun Gothic";
+    //private static final String FONT_NAME = PREFERENCES.get(GraphPreferenceKeys.GRAPH_FONT, "Segoe UI Historic");
+    private static final String FONT_NAME = "Segoe UI Historic";
     private static final Logger LOGGER = Logger.getLogger(SharedDrawable.class.getName());
 
     /**
@@ -104,7 +109,7 @@ public final class SharedDrawable {
             iconTextureName = textureName[0];
 
             // Create shared glyph coordinates and glyph image textures using a GlyphManager
-            glyphManager = new GlyphManager(FONT_NAME, 64, 2048, 2048);
+            glyphManager = new GlyphManager(FONT_NAME, 128, 2048, 2048);
             glyphTextureController = new GlyphManagerOpenGLController(glyphManager);
             labelBackgroundGlyphPosition = glyphManager.createBackgroundGlyph(0.5f);
             glyphTextureController.init(gl);

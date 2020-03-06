@@ -73,6 +73,7 @@ public final class VisualDefaults {
     public static final String DEFAULT_VERTEX_FOREGROUND_ICON = "Unknown";
     public static final boolean DEFAULT_VERTEX_SELECTED = false;
     public static final float DEFAULT_VERTEX_VISIBILITY = 1;
+    public static final float DEFAULT_VERTEX_FILTER_VISIBILITY = 1;
     public static final boolean DEFAULT_VERTEX_DIMMED = false;
     public static final float DEFAULT_VERTEX_RADIUS = 1;
     public static final Blaze DEFAULT_VERTEX_BLAZE = null;
@@ -86,6 +87,7 @@ public final class VisualDefaults {
     public static final boolean DEFAULT_TRANSACTION_SELECTED = false;
     public static final boolean DEFAULT_TRANSACTION_DIMMED = false;
     public static final float DEFAULT_TRANSACTION_VISIBILITY = 1;
+    public static final float DEFAULT_TRANSACTION_FILTER_VISIBILITY = 1;
 
     /*
      * Label/decorator defaults

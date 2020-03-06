@@ -94,6 +94,7 @@ public final class GraphVisualAccess implements VisualAccess {
     private int vertexForegroundIcon = Graph.NOT_FOUND;
     private int vertexSelected = Graph.NOT_FOUND;
     private int vertexVisibility = Graph.NOT_FOUND;
+    private int vertexLayerVisibility = Graph.NOT_FOUND;
     private int vertexDimmed = Graph.NOT_FOUND;
     private int vertexRadius = Graph.NOT_FOUND;
     private int vertexBlaze = Graph.NOT_FOUND;
@@ -244,8 +245,8 @@ public final class GraphVisualAccess implements VisualAccess {
             // Handle changes to the graph's decorators referred attributes
             if (recordChanges) {
                 count = nwDecorator == Graph.NOT_FOUND ? -1 : accessGraph.getValueModificationCounter(nwDecorator);
-                if (count != nwDecoratorModCount) {
-                    nwDecoratorModCount = count;
+                if (count != neDecoratorModCount) {
+                    neDecoratorModCount = count;
                     changes.add(new VisualChangeBuilder(VisualProperty.VERTEX_NW_DECORATOR).forItems(accessGraph.getVertexCount()).build());
                 }
                 count = neDecorator == Graph.NOT_FOUND ? -1 : accessGraph.getValueModificationCounter(neDecorator);
@@ -517,6 +518,12 @@ public final class GraphVisualAccess implements VisualAccess {
                 if (!Objects.equals(count, modCounts.put(VisualConcept.VertexAttribute.VISIBILITY, count))) {
                     changes.add(new VisualChangeBuilder(VisualProperty.VERTEX_VISIBILITY).forItems(accessGraph.getVertexCount()).build());
                 }
+                // TODO Start
+                count = vertexLayerVisibility == Graph.NOT_FOUND ? -1 : accessGraph.getValueModificationCounter(vertexLayerVisibility);
+                if (!Objects.equals(count, modCounts.put(VisualConcept.VertexAttribute.FILTERVISIBILITY, count))) {
+                    changes.add(new VisualChangeBuilder(VisualProperty.VERTEX_VISIBILITY).forItems(accessGraph.getVertexCount()).build());
+                }
+                // TODO endXXXX
                 count = vertexDimmed == Graph.NOT_FOUND ? -1 : accessGraph.getValueModificationCounter(vertexDimmed);
                 if (!Objects.equals(count, modCounts.put(VisualConcept.VertexAttribute.DIMMED, count))) {
                     changes.add(new VisualChangeBuilder(VisualProperty.VERTEX_DIM).forItems(accessGraph.getVertexCount()).build());
@@ -592,6 +599,7 @@ public final class GraphVisualAccess implements VisualAccess {
         vertexForegroundIcon = VisualConcept.VertexAttribute.FOREGROUND_ICON.get(rg);
         vertexSelected = VisualConcept.VertexAttribute.SELECTED.get(rg);
         vertexVisibility = VisualConcept.VertexAttribute.VISIBILITY.get(rg);
+        vertexLayerVisibility = VisualConcept.VertexAttribute.FILTERVISIBILITY.get(rg);
         vertexDimmed = VisualConcept.VertexAttribute.DIMMED.get(rg);
         vertexRadius = VisualConcept.VertexAttribute.NODE_RADIUS.get(rg);
         vertexBlaze = VisualConcept.VertexAttribute.BLAZE.get(rg);
@@ -975,7 +983,8 @@ public final class GraphVisualAccess implements VisualAccess {
 
     @Override
     public float getVertexVisibility(int vertex) {
-        return vertexVisibility != Graph.NOT_FOUND ? accessGraph.getFloatValue(vertexVisibility, accessGraph.getVertex(vertex)) : VisualDefaults.DEFAULT_VERTEX_VISIBILITY;
+        float layerVisibility = vertexLayerVisibility != Graph.NOT_FOUND ? accessGraph.getFloatValue(vertexLayerVisibility, accessGraph.getVertex(vertex)) : VisualDefaults.DEFAULT_VERTEX_FILTER_VISIBILITY;
+        return layerVisibility * (vertexVisibility != Graph.NOT_FOUND ? accessGraph.getFloatValue(vertexVisibility, accessGraph.getVertex(vertex)) : VisualDefaults.DEFAULT_VERTEX_VISIBILITY);
     }
 
     @Override

@@ -27,6 +27,8 @@ import au.gov.asd.tac.constellation.graph.schema.Schema;
 import au.gov.asd.tac.constellation.graph.undo.GraphEdit;
 import au.gov.asd.tac.constellation.graph.utilities.MultiValueStore;
 import au.gov.asd.tac.constellation.utilities.memory.MemoryManager;
+import au.gov.asd.tac.constellation.utilities.postfix.PostfixEvaluator;
+import au.gov.asd.tac.constellation.utilities.postfix.ShuntingYard;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -45,6 +47,12 @@ import java.util.stream.StreamSupport;
  */
 public class StoreGraph extends LockingTarget implements GraphWriteMethods, Serializable {
 
+    public static String queryString =  "( ( Label:=:shown && color:=:#45aa68 ) || color:=:#22aa22 )";
+    public int vertexId = -1;
+    
+    private static final String SELECTED_FILTERMASK_ATTRIBUTE_LABEL = "selected_filter_bitmask";
+    private static final String FILTERMASK_ATTRIBUTE_LABEL = "filter_bitmask";
+    private static final String FILTERVISIBILITY_ATTRIBUTE_LABEL = "filter_visibility";
     private static final int HIGH_BIT = 0x80000000;
     private static final int LOW_BITS = 0x7FFFFFFF;
     private static final int[] CATEGORY_TO_STATE = new int[]{6, 4, 5, 1, 3, 7, 2};
@@ -82,6 +90,11 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
     private NativeValue oldValue = new NativeValue();
     private NativeValue newValue = new NativeValue();
     private GraphEdit graphEdit;
+    private int selectedFilterBitmaskAttrId = -1;
+    private int vertexFilterBitmaskAttrId = -1;
+    private int transactionFilterBitmaskAttrId = -1;
+    private int vertexFilterVisibilityAttrId = -1;
+    private int transactionFilterVisibilityAttrId = -1;
 
     /**
      * Creates a new StoreGraph with the specified capacities.
@@ -1599,6 +1612,28 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
             graphEdit.addAttribute(elementType, attributeType, label, description, defaultValue, attributeMergerId, attributeId);
         }
 
+        // Store IDs of key attributes used in subsequent ongoing calculations
+        if (FILTERMASK_ATTRIBUTE_LABEL.equals(label)) {
+            if (elementType == GraphElementType.VERTEX) {
+                vertexFilterBitmaskAttrId = attributeId;
+            } else if (elementType == GraphElementType.TRANSACTION) {
+                transactionFilterBitmaskAttrId = attributeId;
+            }
+        }
+        
+        if(label.equals("Label")){
+            if (elementType == GraphElementType.VERTEX) {
+                vertexId = attributeId;
+            }
+        }
+        if (FILTERVISIBILITY_ATTRIBUTE_LABEL.equals(label)) {
+            if (elementType == GraphElementType.VERTEX) {
+                vertexFilterVisibilityAttrId = attributeId;
+            } else if (elementType == GraphElementType.TRANSACTION) {
+                transactionFilterVisibilityAttrId = attributeId;
+            }
+        }
+        selectedFilterBitmaskAttrId = SELECTED_FILTERMASK_ATTRIBUTE_LABEL.equals(label) ? attributeId : selectedFilterBitmaskAttrId;
         return attributeId;
     }
 
@@ -1814,6 +1849,190 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
             }
         }
     }
+    
+    // Query written in postfix is evaluated
+    private boolean evaluateQuery(final String postfixQuery, final int id) {
+        /**
+         * Will contain the Statements:
+         * 
+            vertex_color:<=:0,0,0
+            vertex_selected:==:true
+            vertex_color:>:255,255,255
+         */
+        System.out.print("------------------ ");
+        int attrID1 = 1;
+        AttributeDescription ad1 = null;
+        attrID1 = getAttribute(GraphElementType.VERTEX, "Label");
+        if(attrID1 != Graph.NOT_FOUND){
+            ad1 = attributeDescriptions[attrID1];
+        }
+        
+        if(ad1!=null && ad1.getString(id)!=null){
+            System.out.print(ad1.getString(id) + " ");
+        }else{
+            System.out.print("noval :");
+        }
+        
+        System.out.println("postfixquery: " + postfixQuery + "-----------------");
+        String[] rules = postfixQuery.split(" "); // TODO: maybe we cannot split by space as it will cause issues if a space is parsed into the checking argument
+        System.out.println("Rules: " + rules.length);
+        String evaluatedResult = "";
+        boolean finalRes = true;
+        boolean ignoreRes = false;
+        
+        for(String rule : rules){
+            System.out.println("Rule: " + rule);
+            String[] ruleSegments = rule.split(":");
+            int segCount = 0;
+            AttributeDescription ad = null;
+            boolean isEquals = false;
+            int attrID = 1;
+            // iterate over each section and grab the values.
+            for(String segment : ruleSegments){
+                //System.out.println("Current: " + segment);
+                segCount++;
+                switch(segCount){
+                    case 1:{
+                        attrID = getAttribute(GraphElementType.VERTEX, segment);
+                        if(attrID != Graph.NOT_FOUND){
+                            ad = attributeDescriptions[attrID];
+                        }
+                    break;
+                    }
+                    case 2:{
+                        if(segment.equals("=")){
+                            isEquals = true;
+                        }else{
+                            //check for other operators here
+                        }
+                    break;
+                    }
+                    case 3:{
+                        if(isEquals){ // when checking equality
+                            if(ad!=null && ad.getString(id)!=null && (ad.getString(id)).equals(segment)){ // not null
+                                System.out.println("Values are the same! name: " + segment);
+                                finalRes = true;
+                            }else{
+                                
+                                System.out.print("Vals dont match: " + segment + " and: ");
+                                if(ad!=null && ad.getString(id)!=null){
+                                    System.out.println(ad.getString(id));
+                                }else{
+                                    System.out.println("noval");
+                                }
+                                finalRes = false;
+                            }
+                        }
+                    break;
+                    }
+                }
+                
+                // build the string to evaluate
+                if(segment.equals("&&")){
+                    evaluatedResult += "&&" + ":";
+                    ignoreRes = true;
+                }else if(segment.equals("||")){
+                    evaluatedResult += "||" + ":";
+                    ignoreRes = true;
+                }   
+            }
+            
+            // when you need to ignore the result and just use an operator || &&
+            if(ignoreRes){
+                ignoreRes = false;
+            }else{
+                evaluatedResult += finalRes + ":";
+            }
+        }
+        
+        evaluatedResult = evaluatedResult.substring(0, evaluatedResult.length() -1);
+        String[] splitted = evaluatedResult.split(":");
+        
+        String postfix="";
+        for(String s : splitted){
+            postfix += s + " ";
+            //System.out.print(s + " ");
+        }
+        postfix = postfix.substring(0, postfix.length() -1);
+        System.out.println("before eval: " + postfix);
+        
+        String result = PostfixEvaluator.evaluatePostfix(postfix);
+        System.out.println("Result calculated: " + result);
+        
+        if(result.equals("true")){
+            return true;
+        }else if(result.equals("false")){
+            return false;
+        }else{
+            //error here
+            return false;
+        }
+    }
+
+    // DFetermine the visibility bitmask of the obkect in question.
+    private void updateBitmask(final GraphElementType elementType, final int attribute, final int selectedFilterBitmask, final int id) {
+
+        // TODO: Ultimately, loop through elements bitmask and determine if each layer (1-32) should be turned on or off.
+        //       There are 2 types of layers, static and dynamic, if static, the layer is turned on if user has set it.
+        // TODO: Eventually store a static bitmask, and then append to it any dynamic bits based on rules. For now assume all
+        //       entries are dynamic for the sake of calculations
+        // Temp code faking a bitmask - just using layer 2
+        
+        // evaluates the querystring and returns true or false if query is satisified
+        // TODO: must check node against all queries.
+        int bitmask = (evaluateQuery(ShuntingYard.postfix(queryString), id)) ? 3 : 1;
+        
+        if (elementType == GraphElementType.VERTEX) {
+
+            if (vertexFilterBitmaskAttrId >= 0 && vertexFilterVisibilityAttrId >= 0) {
+                // Attributes exist, update bitmask (this eventually becomes more comples to cover all layers). If the bitmask
+                // is non-zero value then the element can be displayed, if not, layer filters will result in it being hidden.
+                if (attribute != vertexFilterBitmaskAttrId) {
+                    setIntValue(vertexFilterBitmaskAttrId, id, bitmask);
+                }
+                final float existingVisibility = getFloatValue(vertexFilterVisibilityAttrId, id);
+                if ((bitmask & selectedFilterBitmask) > 0) {
+                    // A value > 0 indicates the object is mapped to at least one visible layer
+                    if (existingVisibility != 1.0f) {
+                        attributeDescriptions[vertexFilterVisibilityAttrId].setFloat(id, 1.0f);
+                        attributeIndices[vertexFilterVisibilityAttrId].updateElement(id);
+                        attributeModificationCounters[vertexFilterVisibilityAttrId] += operationMode.getModificationIncrement();
+                    }
+                } else {
+                    // A value = 0 indicates the object is not mapped to at least one visible layer
+                    if (existingVisibility != 0.0f) {
+                        attributeDescriptions[vertexFilterVisibilityAttrId].setFloat(id, 0.0f);
+                        attributeIndices[vertexFilterVisibilityAttrId].updateElement(id);
+                        attributeModificationCounters[vertexFilterVisibilityAttrId] += operationMode.getModificationIncrement();
+                    }
+                }
+            }
+        } else if (elementType == GraphElementType.TRANSACTION) {
+            // TODO: only implemented for vertexes at this point
+        }
+
+    }
+
+    // Check attribute being changed and make a decision on whehter object visibility needs to be recalculated
+    private void updateBitmask(final int attribute, final int id) {
+        //if (attribute != vertexFilterVisibilityAttrId && attribute != transactionFilterVisibilityAttrId) {
+            // Extract graphs current selected filter bitmask and element type use to recalculate element bitmask
+            int selectedFilterBitmask = (selectedFilterBitmaskAttrId >= 0) ? getIntValue(selectedFilterBitmaskAttrId, 0) : 1;
+            GraphElementType elementType = getAttributeElementType(attribute);
+            updateBitmask(elementType, attribute, selectedFilterBitmask, id);
+        //}
+    }
+
+    // Force a visibility update of all objects
+    private void updateAllBitmasks() {
+        // Loop through all vertexes and recalculate bitmasks
+        final int vertexCount = getVertexCount();
+        int selectedFilterBitmask = (selectedFilterBitmaskAttrId >= 0) ? getIntValue(selectedFilterBitmaskAttrId, 0) : 1;
+        for (int i = 0; i < vertexCount; i++) {
+            updateBitmask(GraphElementType.VERTEX, -1, selectedFilterBitmask, vStore.getElement(i));
+        }
+        int j = 1;
+    }
 
     @Override
     public void setByteValue(final int attribute, final int id, final byte value) {
@@ -1843,6 +2062,7 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
                 }
             }
         }
+        updateBitmask(attribute, id);
     }
 
     @Override
@@ -1873,6 +2093,7 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
                 }
             }
         }
+        updateBitmask(attribute, id);
     }
 
     @Override
@@ -1902,6 +2123,14 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
                     removeFromIndex(keyType, id);
                 }
             }
+        }
+
+        // If the selected layers to display value has changed then recalculate visibility of all objects, otherwise,
+        // check if the change impacts an objects visibility
+        if (selectedFilterBitmaskAttrId == attribute) {
+            updateAllBitmasks();
+        } else {
+            updateBitmask(attribute, id);
         }
     }
 
@@ -1933,6 +2162,7 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
                 }
             }
         }
+        updateBitmask(attribute, id);
     }
 
     @Override
@@ -1963,6 +2193,7 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
                 }
             }
         }
+        updateBitmask(attribute, id);
     }
 
     @Override
@@ -1993,6 +2224,7 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
                 }
             }
         }
+        updateBitmask(attribute, id);
     }
 
     @Override
@@ -2023,6 +2255,7 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
                 }
             }
         }
+        updateBitmask(attribute, id);
     }
 
     @Override
@@ -2053,6 +2286,7 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
                 }
             }
         }
+        updateBitmask(attribute, id);
     }
 
     @Override
@@ -2083,6 +2317,7 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
                 }
             }
         }
+        updateBitmask(attribute, id);
     }
 
     @Override
@@ -2113,6 +2348,7 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
                 }
             }
         }
+        updateBitmask(attribute, id);
     }
 
     @Override

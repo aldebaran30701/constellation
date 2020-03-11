@@ -51,29 +51,22 @@ public class ShuntingYard {
         for (String token : infix.split("\\s")) {
             // operator adding to stack
             if (OPERATORS.containsKey(token)) {
-                while ( ! stack.isEmpty() && isHigerPrec(token, stack.peek()))
+                while ( ! stack.isEmpty() && isHigerPrec(token, stack.peek())){
                     output.append(stack.pop()).append(' ');
-                stack.push(token);
-
-            // left parenthesis
-            } else if (token.equals("(")) {
-                stack.push(token);
-
-            // right parenthesis
-            } else if (token.equals(")")) {
-                while ( ! stack.peek().equals("("))
-                    output.append(stack.pop()).append(' ');
-                stack.pop();
-
-            // digit writing
-            } else {
-                if(false){ // if (evaluateStatement(token)) { // implement this to grab attributes and check if their value meets the statement within token
-                    // can append a string repr of a bool here so evaluation is done easily.
-                    //output.append("True").append(' ');
-                }else{
-                    // output.append("False").append(' '); // this will write false when the statement does not hold true
-                    output.append(token).append(' ');
                 }
+                stack.push(token);
+            } 
+            else if (token.equals("(")) { // left parenthesis
+                stack.push(token);
+            } 
+            else if (token.equals(")")) { // right parenthesis
+                while ( ! stack.peek().equals("(")){
+                    output.append(stack.pop()).append(' ');
+                }
+                stack.pop();
+            } 
+            else {
+                output.append(token).append(' ');
             }
         }
 
@@ -81,9 +74,7 @@ public class ShuntingYard {
         while ( ! stack.isEmpty()){
             output.append(stack.pop()).append(' ');
         }
-
         return output.toString();
     }
-
 }
 

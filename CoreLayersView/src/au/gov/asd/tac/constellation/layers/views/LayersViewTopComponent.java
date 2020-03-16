@@ -1,12 +1,12 @@
 /*
  * Copyright 2010-2019 Australian Signals Directorate
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,12 +23,14 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
+
 /**
  * Top component which displays something.
+ *
  * @author aldebaran30701
- * 
+ *
  * TODO: what does mode - output do?
- * 
+ *
  */
 @TopComponent.Description(
         preferredID = "LayersViewTopComponent",
@@ -45,7 +47,7 @@ import org.openide.windows.TopComponent;
 )
 @ActionReferences({
     @ActionReference(path = "Menu/Views", position = 105)//,
-    //@ActionReference(path = "Shortcuts", name = "CS-A")
+//@ActionReference(path = "Shortcuts", name = "CS-A")
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_LayersViewAction",
@@ -56,11 +58,11 @@ import org.openide.windows.TopComponent;
     "CTL_LayersViewTopComponent=Layers View",
     "HINT_LayersViewTopComponent=Layers View"
 })
-public final class LayersViewTopComponent extends JavaFxTopComponent<LayersViewPane>{
+public final class LayersViewTopComponent extends JavaFxTopComponent<LayersViewPane> {
 
     private final LayersViewController layersViewController;
     private final LayersViewPane layersViewPane;
-    
+
     public LayersViewTopComponent() {
         setName(Bundle.CTL_LayersViewTopComponent());
         setToolTipText(Bundle.HINT_LayersViewTopComponent());
@@ -70,7 +72,7 @@ public final class LayersViewTopComponent extends JavaFxTopComponent<LayersViewP
         layersViewPane = new LayersViewPane(layersViewController);
         initContent();
     }
-    
+
     @Override
     protected String createStyle() {
         return "resources/layers-view.css";
@@ -80,14 +82,14 @@ public final class LayersViewTopComponent extends JavaFxTopComponent<LayersViewP
     protected LayersViewPane createContent() {
         return layersViewPane;
     }
-    
+
     @Override
     protected void handleNewGraph(Graph graph) {
         /* - Old code - implement new handler if needed
         if (attributeCalculatorPane != null && graph != null) {
             attributeCalculatorPane.updateAttributes(graph);
         }
-        */
+         */
     }
 
     /**

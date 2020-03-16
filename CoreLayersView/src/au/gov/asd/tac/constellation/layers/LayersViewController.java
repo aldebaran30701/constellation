@@ -1,12 +1,12 @@
 /*
- * Copyright 2010-2019 Australian Signals Directorate
- * 
+ * Copyright 2010-2020 Australian Signals Directorate
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,65 +16,86 @@
 package au.gov.asd.tac.constellation.layers;
 
 import au.gov.asd.tac.constellation.graph.StoreGraph;
+import au.gov.asd.tac.constellation.graph.manager.GraphManager;
+import au.gov.asd.tac.constellation.layers.utilities.UpdateGraphBitmaskPlugin;
 import au.gov.asd.tac.constellation.layers.views.LayersViewPane;
 import au.gov.asd.tac.constellation.layers.views.LayersViewTopComponent;
+import au.gov.asd.tac.constellation.pluginframework.PluginExecution;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
 
 /**
  *
  * Controls interaction of UI to layers and filtering of nodes.
- * TODO: Currently has codeblocks from Attribute calculator and its execute functionality. 
- * 
+ *
  * @author aldebaran30701
  */
 public class LayersViewController {
-    //public static final List<String> ATTRIBUTE_TYPES = Arrays.asList(StringAttributeDescription.ATTRIBUTE_NAME, IntegerAttributeDescription.ATTRIBUTE_NAME, BooleanAttributeDescription.ATTRIBUTE_NAME, FloatAttributeDescription.ATTRIBUTE_NAME, ColorAttributeDescription.ATTRIBUTE_NAME, IconAttributeDescription.ATTRIBUTE_NAME, ZonedDateTimeAttributeDescription.ATTRIBUTE_NAME, TimeAttributeDescription.ATTRIBUTE_NAME, DateAttributeDescription.ATTRIBUTE_NAME, LocalDateTimeAttributeDescription.ATTRIBUTE_NAME, VertexTypeAttributeDescription.ATTRIBUTE_NAME, TransactionTypeAttributeDescription.ATTRIBUTE_NAME);
 
     private final LayersViewTopComponent parent;
+    private LayersViewPane pane = null;
 
     public LayersViewController(final LayersViewTopComponent parent) {
         this.parent = parent;
     }
 
+    /**
+     * Runs a plugin which updates the bitmask that should be used to show
+     * elements.
+     */
     public void execute() {
-        // used currently for selecting the layers to view and queries to run
-        final LayersViewPane layersViewPane = parent.getContent();
-        if (layersViewPane != null) {
-            
-            String[] layerEntries = layersViewPane.viewLayersInput.getText().split(",");
-            
-            int tempMask = 0;
-            for(String layerNo : layerEntries) {
-                if(Integer.parseInt(layerNo) > 0 && Integer.parseInt(layerNo) < Integer.MAX_VALUE){
-                    // when parsed - maybe check is not necessary
-                    System.err.println("parsed: " + Integer.parseInt(layerNo));
-                    tempMask |= (1 << Integer.parseInt(layerNo));
-                }
-            }
-            // set value crudely
-            StoreGraph.currentVisibleMask = tempMask;
+        // ensure pane is set to the content of the parent view.
+        pane = parent.getContent();
+        if (pane == null) {
+            return;
         }
-        
-        
-        
-        
-        
-        /**
-        final AttributeCalculatorPane attributeCalculatorPane = parent.getContent();
-        if (attributeCalculatorPane != null) {
-            final String script = attributeCalculatorPane.getScript();
-            if (!script.trim().isEmpty()) {
-                final GraphElementType elementType = attributeCalculatorPane.getElementType();
-                final String attribute = attributeCalculatorPane.getAttribute();
-                final String attributeType = attributeCalculatorPane.getAttributeType();
-                final boolean selectedOnly = attributeCalculatorPane.isSelectedOnly();
-                final boolean completeWithSchema = attributeCalculatorPane.isCompleteWithSchema();
 
-                final AttributeCalculatorPlugin plugin = new AttributeCalculatorPlugin(elementType, attribute, attributeType, "text/python", script, selectedOnly, completeWithSchema);
-                PluginExecution.withPlugin(plugin).executeLater(parent.getCurrentGraph());
-            } else {
-                StatusDisplayer.getDefault().setStatusText("Not executing empty script.");
-            }
+        int tempMask = 0b0;
+        Iterator it = pane.getQueries().getChildren().iterator();
+        it.next();
+
+        while (it.hasNext()) {
+            HBox queryBox = (HBox) (it.next());
+            // This is the checkbox
+            CheckBox queryCB = (CheckBox) queryBox.getChildren().get(1);
+            Text queryID = (Text) queryBox.getChildren().get(0);
+
+            // only add layer id to list when it is checked
+            tempMask |= queryCB.isSelected() ? (1 << Integer.parseInt(queryID.getText()) - 1) : 0;
         }
-        * */
+
+        // if the tempmask is 1, it means none of the boxes are checked. therefore display default layer 1 (All nodes)
+        tempMask = (tempMask > 1) ? tempMask & ~0b1 : tempMask;
+
+        PluginExecution.withPlugin(new UpdateGraphBitmaskPlugin(tempMask)).executeLater(GraphManager.getDefault().getActiveGraph());
+    }
+
+    /**
+     * Grab all queries entered into textfields and store them in the qraph's
+     * queries.
+     */
+    public void submit() {
+        // ensure pane is set to the content of the parent view.
+        pane = parent.getContent();
+        if (pane == null) {
+            return;
+        }
+
+        List<String> layerQueries = new ArrayList<>();
+        Iterator it = pane.getQueries().getChildren().iterator();
+        it.next();
+
+        while (it.hasNext()) {
+            HBox queryBox = (HBox) (it.next());
+            TextArea tempTA = (TextArea) (queryBox.getChildren().get(2));
+            layerQueries.add(tempTA.getText().equals("") ? null : tempTA.getText());
+        }
+
+        StoreGraph.setLayerQueries(layerQueries);
     }
 }

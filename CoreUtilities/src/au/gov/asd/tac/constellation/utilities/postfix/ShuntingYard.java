@@ -45,6 +45,9 @@ public class ShuntingYard {
 
     public static String postfix(String infix)
     {
+        if(infix.equals("")){
+            return "";
+        }
         StringBuilder output = new StringBuilder();
         Deque<String> stack  = new LinkedList<>();
 

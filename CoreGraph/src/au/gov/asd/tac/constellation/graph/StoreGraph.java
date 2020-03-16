@@ -49,9 +49,8 @@ import java.util.stream.StreamSupport;
  */
 public class StoreGraph extends LockingTarget implements GraphWriteMethods, Serializable {
 
-    public static String queryString =  "( ( Label:=:shown && color:=:#45aa68 ) || color:=:#22aa22 )";
     public int vertexId = -1;
-    
+
     private static final String SELECTED_FILTERMASK_ATTRIBUTE_LABEL = "selected_filter_bitmask";
     private static final String FILTERMASK_ATTRIBUTE_LABEL = "filter_bitmask";
     private static final String FILTERVISIBILITY_ATTRIBUTE_LABEL = "filter_visibility";
@@ -97,18 +96,17 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
     private int transactionFilterBitmaskAttrId = -1;
     private int vertexFilterVisibilityAttrId = -1;
     private int transactionFilterVisibilityAttrId = -1;
-    
-    // TEMP VARIABLE to test updates
-    public static int currentVisibleMask = 1; 
-    
-    
+
+    // TODO: TEMP VARIABLE to test updates - This will have to be migrated to a graph attribute
+    public static int currentVisibleMask = 1;
+
     // 0000
     // first two bits are not used XX00
     // second bit from right is boolean for if you have to display the layer 00X0
     // last bit on right is whether it is a dynamic layer 000X
-    private List<Byte> layerPrefs = new ArrayList<>();
-    private List<String> layerQueries = new ArrayList<>();
-    
+    private final List<Byte> layerPrefs = new ArrayList<>();
+    public final static List<String> LAYER_QUERIES = new ArrayList<>();
+
     /**
      * Creates a new StoreGraph with the specified capacities.
      *
@@ -132,6 +130,11 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
     @Override
     public boolean isRecordingEdit() {
         return graphEdit != null;
+    }
+
+    public static void setLayerQueries(final List<String> queries) {
+        LAYER_QUERIES.clear();
+        LAYER_QUERIES.addAll(queries);
     }
 
     /**
@@ -201,85 +204,6 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
         Arrays.fill(primaryKeyLookup, -1);
 
         graphElementMerger = schema == null ? null : schema.getFactory().getGraphElementMerger();
-        layerPrefs.clear();
-        layerPrefs.add(0,(byte)0b0000); // dynamic layer dont show
-        layerPrefs.add(1,(byte)0b0000); // show layer not dynamic // 2
-        layerPrefs.add(2,(byte)0b0000); // show layer that is dynamic // 3
-        layerPrefs.add(3,(byte)0b0000); // dont show layer and not dynamic
-        layerPrefs.add(4,(byte)0b0000);
-        layerPrefs.add(5,(byte)0b0000);
-        layerPrefs.add(6,(byte)0b0000);
-        layerPrefs.add(7,(byte)0b0000);
-        layerPrefs.add(8,(byte)0b0000);
-        layerPrefs.add(9,(byte)0b0000);
-        layerPrefs.add(10,(byte)0b0000);
-        layerPrefs.add(11,(byte)0b0000);
-        layerPrefs.add(12,(byte)0b0000);
-        layerPrefs.add(13,(byte)0b0000);
-        layerPrefs.add(14,(byte)0b0000);
-        layerPrefs.add(15,(byte)0b0000);
-        layerPrefs.add(16,(byte)0b0000);
-        layerPrefs.add(17,(byte)0b0000);
-        layerPrefs.add(18,(byte)0b0000);
-        layerPrefs.add(19,(byte)0b0000);
-        layerPrefs.add(20,(byte)0b0000);
-        layerPrefs.add(21,(byte)0b0000);
-        layerPrefs.add(22,(byte)0b0000);
-        layerPrefs.add(23,(byte)0b0000);
-        layerPrefs.add(24,(byte)0b0000);
-        layerPrefs.add(25,(byte)0b0000);
-        layerPrefs.add(26,(byte)0b0000);
-        layerPrefs.add(27,(byte)0b0000);
-        layerPrefs.add(28,(byte)0b0000);
-        layerPrefs.add(29,(byte)0b0000);
-        layerPrefs.add(30,(byte)0b0000);
-        layerPrefs.add(31,(byte)0b0000);
-        
-        
-        layerQueries.clear();
-        // Layer 0 is Default layer | null meaning no dynamic query
-        layerQueries.add(0,"");
-        layerQueries.add(1,"( ( Label:=:shown && color:=:#45aa68 ) || color:=:#22aa22 )"); // 2
-        layerQueries.add(2,null); // 3
-        layerQueries.add(3,"( ( Label:=:shown && color:=:#45aa68 ) || color:=:#22aa22 )"); // 4
-        layerQueries.add(4,null);
-        layerQueries.add(5,null);
-        layerQueries.add(6,null);
-        layerQueries.add(7,null);
-        layerQueries.add(8,null);
-        layerQueries.add(9,null);
-        layerQueries.add(10,null);
-        layerQueries.add(11,null);
-        layerQueries.add(12,null);
-        layerQueries.add(13,null);
-        layerQueries.add(14,null);
-        layerQueries.add(15,null);
-        layerQueries.add(16,null);
-        layerQueries.add(17,null);
-        layerQueries.add(18,null);
-        layerQueries.add(19,null);
-        layerQueries.add(20,null);
-        layerQueries.add(21,null);
-        layerQueries.add(22,null);
-        layerQueries.add(23,null);
-        layerQueries.add(24,null);
-        layerQueries.add(25,null);
-        layerQueries.add(26,null);
-        layerQueries.add(27,null);
-        layerQueries.add(28,null);
-        layerQueries.add(29,null);
-        layerQueries.add(30,null);
-        layerQueries.add(31,null);
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
         MemoryManager.newObject(StoreGraph.class);
     }
 
@@ -457,15 +381,15 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
                 setAttributeIndexType(attribute, original.attributeIndexTypes[attribute]);
             }
         }
-        
+
         // New Parameters copied
         this.selectedFilterBitmaskAttrId = original.selectedFilterBitmaskAttrId;
         this.vertexFilterBitmaskAttrId = original.vertexFilterBitmaskAttrId;
         this.transactionFilterBitmaskAttrId = original.transactionFilterBitmaskAttrId;
         this.vertexFilterVisibilityAttrId = original.vertexFilterVisibilityAttrId;
         this.transactionFilterVisibilityAttrId = original.transactionFilterVisibilityAttrId;
-        this.layerPrefs = original.layerPrefs;
-        this.layerQueries = original.layerQueries;
+        this.layerPrefs.addAll(original.layerPrefs);
+        this.setLayerQueries(original.LAYER_QUERIES); // TODO: Static queries arent going to be any good, a copy will result in editing of same query - Fix this
 
         MemoryManager.newObject(StoreGraph.class);
     }
@@ -1720,8 +1644,8 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
                 transactionFilterBitmaskAttrId = attributeId;
             }
         }
-        
-        if(label.equals("Label")){
+
+        if (label.equals("Label")) {
             if (elementType == GraphElementType.VERTEX) {
                 vertexId = attributeId;
             }
@@ -1949,103 +1873,106 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
             }
         }
     }
+
     /**
-     * may be beneficial to trigger this only when an update of the UI is made, or before any query is rechecked
+     * TODO: There is a possibility of making only the new nodes which have had
+     * values change, be the rechecked nodes Allows the recalculation of layer
+     * visibilities with respect to which layers are toggled layerPrefs holds
+     * information about whether a graph is shown, or if it needs to be
+     * dynamically calculated dynamically calculated meaning does the element
+     * need to be rechecked on change of value
      */
     private void recalculateVisibilities() {
         layerPrefs.clear();
-        //currentVisibleMask = 0b0010;
-        for(int i=0; i<layerQueries.size();i++){
-            if(layerQueries.get(i) == null){
-                // not dynamic
-                if((currentVisibleMask & (1 << (i+1))) > 0){ // check the i-th bit is set -> non zero int returned
-                    //0010
-                    System.err.println("*Not dynamic but shown " + i+1);
-                    
-                    layerPrefs.add(i,(byte)0b0010);
-                } else{
-                    // not shown 0000
-                    System.err.println("not dynamic and not shown " + i+1);
-                    layerPrefs.add(i,(byte)0b0000);
-                }
-            } else{
+
+        int i = 0;
+        for (String query : LAYER_QUERIES) {
+            if (LAYER_QUERIES.get(i) == null || LAYER_QUERIES.get(i).equals(" ")) {
+                // Static layers or layer 1 (default - show all)
+                // if layerNo has a bit set in the current mask, set it to show
+                layerPrefs.add(i, (currentVisibleMask & (1 << (i++))) > 0 ? (byte) 0b0010 : (byte) 0b0000);
+            } else {
                 // dynamic
-                if((currentVisibleMask & (1 << (i+1))) > 0){ // check the i-th bit is set -> non zero int returned
-                    //0011
-                    System.err.println("*dynamic and shown " + i+1);
-                    layerPrefs.add(i,(byte)0b0011);
-                }else{
-                    // not shown 0001
-                    System.err.println("dynamic and not shown " + i+1);
-                    layerPrefs.add(i,(byte)0b0001);
-                }
+                layerPrefs.add(i, (currentVisibleMask & (1 << (i++))) > 0 ? (byte) 0b0011 : (byte) 0b0001);
             }
         }
     }
-    
+
     /**
-     * Loop over all queries, recalculate dynamic ones. 
-     * Append bit flag to total bitmask when it satifies the query.
-     * 
-     * TODO: possibly can get rid of the else if case; as when new queries or filters are added they can be bitmasked then. (more efficient)
-     * 
+     * Loop over all queries, recalculate dynamic ones. Append bit flag to
+     * bitmask when it satifies the query.
+     *
+     * TODO: possibly can get rid of the else if case; as when new queries or
+     * filters are added they can be bitmasked then. (more efficient)
+     *
      * @param id the id of the element
-     * @return bitmask a 32 bit integer which represents a flagset of which layer to show it on.
+     * @return bitmask a 32 bit integer which represents a flagset of which
+     * layer to show it on.
      */
-    private int recalculateBitmask(final int id){
+    private int recalculateBitmask(final int id) {
         int bitmask = 1;
-        
-        for(int i=0; i<layerQueries.size();i++){
-            if((layerPrefs.get(i) & 0b0011) == 3 && layerQueries.get(i) != null){
-                bitmask |= (evaluateQuery(ShuntingYard.postfix(layerQueries.get(i)), id) ? (1 << (i+1)) : bitmask);
-            } else if(i == 0 && (layerPrefs.get(i) & 0b0010) == 2){ // visible and layer 1
+
+        int i = 0;
+        for (String query : LAYER_QUERIES) {
+            if ((layerPrefs.get(i) & 0b0011) == 3 && LAYER_QUERIES.get(i) != null) { // calculate bitmask for dynamic layers that are displayed
+                bitmask |= (evaluateQuery(ShuntingYard.postfix(LAYER_QUERIES.get(i)), id) ? (1 << (i)) : bitmask);
+            } else if (i == 0 && (layerPrefs.get(i) & 0b0010) == 2) { // layer 1 and layer is enabled
                 bitmask |= (1 << 1);
             }
+            i++;
         }
         return bitmask;
     }
-    
-  
+
+    // TODO: Check other operators for functionality andimplement them
+    // TODO: Implement all other transaction types
+    // TODO: Possibly parse a boolean in as to wether the query is on a vertex or transaction
+    // TODO: Clean up this code and cases
     /**
-     * Evaluates a string representation of a query in relation to a single element on the graph
-     * returns true when the node satisfies the condition. False otherwise.
-     * Query is structured as below:
+     * Evaluates a string representation of a query in relation to a single
+     * element on the graph returns true when the node satisfies the condition.
+     * False otherwise. Query is structured as below:
      * vertex_color:<=:0,0,0 vertex_selected:==:true vertex_color:>:255,255,255
-     * 
+     *
      * @param postfixQuery the string query
      * @param id the id of the element
-     * @return a boolean result determining whether the element satisfied the constraints.
+     * @return a boolean result determining whether the element satisfied the
+     * constraints.
      */
     private boolean evaluateQuery(final String postfixQuery, final int id) {
+        // Exit condition for show all
+        if (postfixQuery.equals("")) {
+            return true;
+        }
+
         /**
          * Will contain the Statements:
-         * 
-            vertex_color:<=:0,0,0
-            vertex_selected:==:true
-            vertex_color:>:255,255,255
+         *
+         * vertex_color:<=:0,0,0
+         * vertex_selected:==:true
+         * vertex_color:>:255,255,255
          */
         //System.out.print("------------------ ");
-        int attrID1 = 1;
-        AttributeDescription ad1 = null;
-        attrID1 = getAttribute(GraphElementType.VERTEX, "Label");
-        if(attrID1 != Graph.NOT_FOUND){
-            ad1 = attributeDescriptions[attrID1];
-        }
-        
-        if(ad1!=null && ad1.getString(id)!=null){
-            //System.out.print(ad1.getString(id) + " ");
-        }else{
-            //System.out.print("noval :");
-        }
-        
+//        int attrID1 = 1;
+//        AttributeDescription ad1 = null;
+//        attrID1 = getAttribute(GraphElementType.VERTEX, "Label");
+//        if(attrID1 != Graph.NOT_FOUND){
+//            ad1 = attributeDescriptions[attrID1];
+//        }
+//
+//        if(ad1!=null && ad1.getString(id)!=null){
+//            //System.out.print(ad1.getString(id) + " ");
+//        }else{
+//            //System.out.print("noval :");
+//        }
         //System.out.println("postfixquery: " + postfixQuery + "-----------------");
         String[] rules = postfixQuery.split(" "); // TODO: maybe we cannot split by space as it will cause issues if a space is parsed into the checking argument
         //System.out.println("Rules: " + rules.length);
         String evaluatedResult = "";
         boolean finalRes = true;
         boolean ignoreRes = false;
-        
-        for(String rule : rules){
+
+        for (String rule : rules) {
             //System.out.println("Rule: " + rule);
             String[] ruleSegments = rule.split(":");
             int segCount = 0;
@@ -2053,82 +1980,95 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
             boolean isEquals = false;
             int attrID = 1;
             // iterate over each section and grab the values.
-            for(String segment : ruleSegments){
+            for (String segment : ruleSegments) {
                 //System.out.println("Current: " + segment);
                 segCount++;
-                switch(segCount){
-                    case 1:{
+                switch (segCount) {
+                    case 1: {
                         attrID = getAttribute(GraphElementType.VERTEX, segment);
-                        if(attrID != Graph.NOT_FOUND){
+                        if (attrID != Graph.NOT_FOUND) {
                             ad = attributeDescriptions[attrID];
                         }
-                    break;
+                        break;
                     }
-                    case 2:{
-                        if(segment.equals("=")){
-                            isEquals = true;
-                        }else{
-                            //check for other operators here
+                    case 2: {
+                        switch (segment) {
+                            case "=": {// equality
+                                isEquals = true; // Possibly use an enum to handle multiple different conclusions?
+                                break;
+                            }
+                            case "!=": {// not equality
+                                break;
+                            }
+                            case ">": {// greater than - how to handle things which can't be compared GT or LT?
+                                break;
+                            }
+                            case "<": {// Less than
+                                break;
+                            }
+                            default: {// Default do nothing - unsure of operator - Error?
+                                break;
+                            }
                         }
-                    break;
+                        break;
                     }
-                    case 3:{
-                        if(isEquals){ // when checking equality
-                            if(ad!=null && ad.getString(id)!=null && (ad.getString(id)).equals(segment)){ // not null
+                    case 3: {
+                        if (isEquals) { // when checking equality
+                            if (ad != null && ad.getString(id) != null && (ad.getString(id)).equals(segment)) { // not null
                                 //System.out.println("Values are the same! name: " + segment);
                                 finalRes = true;
-                            }else{
-                                
-                               // System.out.print("Vals dont match: " + segment + " and: ");
-                                if(ad!=null && ad.getString(id)!=null){
+                            } else {
+
+                                // System.out.print("Vals dont match: " + segment + " and: ");
+                                if (ad != null && ad.getString(id) != null) {
                                     //System.out.println(ad.getString(id));
-                                }else{
+                                } else {
                                     //System.out.println("noval");
                                 }
                                 finalRes = false;
                             }
                         }
-                    break;
+                        break;
                     }
                 }
-                
+
                 // build the string to evaluate
-                if(segment.equals("&&")){
+                if (segment.equals("&&")) {
                     evaluatedResult += "&&" + ":";
                     ignoreRes = true;
-                }else if(segment.equals("||")){
+                } else if (segment.equals("||")) {
                     evaluatedResult += "||" + ":";
                     ignoreRes = true;
-                }   
+                }
             }
-            
+
             // when you need to ignore the result and just use an operator || &&
-            if(ignoreRes){
+            if (ignoreRes) {
                 ignoreRes = false;
-            }else{
+            } else {
                 evaluatedResult += finalRes + ":";
             }
         }
-        
-        evaluatedResult = evaluatedResult.substring(0, evaluatedResult.length() -1);
+
+        evaluatedResult = evaluatedResult.length() == 0 ? evaluatedResult : evaluatedResult.substring(0, evaluatedResult.length() - 1);
         String[] splitted = evaluatedResult.split(":");
-        
-        String postfix="";
-        for(String s : splitted){
+
+        String postfix = "";
+        for (String s : splitted) {
             postfix += s + " ";
             //System.out.print(s + " ");
         }
-        postfix = postfix.substring(0, postfix.length() -1);
+        postfix = postfix.substring(0, postfix.length() - 1);
         //System.out.println("before eval: " + postfix);
-        
+
         String result = PostfixEvaluator.evaluatePostfix(postfix);
         //System.out.println("Result calculated: " + result);
-        
-        if(result.equals("true")){
+
+        if (result.equals("true")) {
             return true;
-        }else if(result.equals("false")){
+        } else if (result.equals("false")) {
             return false;
-        }else{
+        } else {
             //error here
             return false;
         }
@@ -2141,20 +2081,15 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
         //       There are 2 types of layers, static and dynamic, if static, the layer is turned on if user has set it.
         // TODO: Eventually store a static bitmask, and then append to it any dynamic bits based on rules. For now assume all
         //       entries are dynamic for the sake of calculations
-        // Temp code faking a bitmask - just using layer 2
-        
-        // recheck all visibilities and dynamic query checks
-        recalculateVisibilities();
-        
         int bitmask = recalculateBitmask(id);
-        
+
         if (elementType == GraphElementType.VERTEX) {
 
             // when attr ids are found
             if (vertexFilterBitmaskAttrId >= 0 && vertexFilterVisibilityAttrId >= 0) {
                 // Attributes exist, update bitmask (this eventually becomes more comples to cover all layers). If the bitmask
                 // is non-zero value then the element can be displayed, if not, layer filters will result in it being hidden.
-                
+
                 if (attribute != vertexFilterBitmaskAttrId) { // set filter bitmask when not updating (prevents infinite loop)
                     setIntValue(vertexFilterBitmaskAttrId, id, bitmask);
                 }
@@ -2184,12 +2119,19 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
 
     // Check attribute being changed and make a decision on whehter object visibility needs to be recalculated
     private void updateBitmask(final int attribute, final int id) {
-        //if (attribute != vertexFilterVisibilityAttrId && attribute != transactionFilterVisibilityAttrId) {
+        if (attribute != vertexFilterVisibilityAttrId && attribute != transactionFilterVisibilityAttrId) {
             // Extract graphs current selected filter bitmask and element type use to recalculate element bitmask
             int selectedFilterBitmask = (selectedFilterBitmaskAttrId >= 0) ? getIntValue(selectedFilterBitmaskAttrId, 0) : 1;
             GraphElementType elementType = getAttributeElementType(attribute);
+
+            // Preloading layerPrefs JIT incase of no instantiation
+            if (layerPrefs.isEmpty()) {
+                for (int j = 0; j < 31; j++) {
+                    layerPrefs.add((byte) 0b0000);
+                }
+            }
             updateBitmask(elementType, attribute, selectedFilterBitmask, id);
-        //}
+        }
     }
 
     // Force a visibility update of all objects
@@ -2197,10 +2139,13 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
         // Loop through all vertexes and recalculate bitmasks
         final int vertexCount = getVertexCount();
         int selectedFilterBitmask = (selectedFilterBitmaskAttrId >= 0) ? getIntValue(selectedFilterBitmaskAttrId, 0) : 1;
+
+        currentVisibleMask = selectedFilterBitmask;
+        recalculateVisibilities();
+
         for (int i = 0; i < vertexCount; i++) {
             updateBitmask(GraphElementType.VERTEX, -1, selectedFilterBitmask, vStore.getElement(i));
         }
-        int j = 1;
     }
 
     @Override
@@ -2296,8 +2241,10 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
 
         // If the selected layers to display value has changed then recalculate visibility of all objects, otherwise,
         // check if the change impacts an objects visibility
-        if (selectedFilterBitmaskAttrId < 0){System.out.print("SelectedfilterBitmaskAttrId not found");}
-        
+        if (selectedFilterBitmaskAttrId < 0) {
+            System.out.print("SelectedfilterBitmaskAttrId not found");
+        }
+
         if (selectedFilterBitmaskAttrId >= 0 && selectedFilterBitmaskAttrId == attribute) {
             updateAllBitmasks();
         } else {

@@ -29,9 +29,9 @@ public class PostfixEvaluator {
     public static String evaluatePostfix(String exp) {
         //create a stack
         Stack<String> stack = new Stack<>();
-        System.out.println(exp);
+        //System.out.println(exp);
         String[] expr = exp.split(" ");
-        System.out.println("expr count before pop: " + expr.length);
+        //System.out.println("expr count before pop: " + expr.length);
         // Scan all characters one by one
         for (int i = 0; i < expr.length; i++) {
             String c = expr[i];
@@ -39,7 +39,7 @@ public class PostfixEvaluator {
             // If the scanned character is T or F,
             // push it to the stack.
             if (c.equals("true") || c.equals("false")) {
-                System.out.println("Adding operator " + c + " to the stack");
+                //System.out.println("Adding operator " + c + " to the stack");
                 stack.push(c);
             } else {
                 //System.out.println("current string: " + c);
@@ -55,7 +55,7 @@ public class PostfixEvaluator {
                 switch (c) {
                     // and case
                     case "&&": {
-                         System.out.println(val1 + "&&" + val2);
+                         //System.out.println(val1 + "&&" + val2);
                         if (val1.equals("true") && val2.equals("false")) {
                             // T && F
                             stack.push("false");
@@ -74,7 +74,7 @@ public class PostfixEvaluator {
 
                     // or case
                     case "||": {
-                        System.out.println(val1 + "||" + val2);
+                        //System.out.println(val1 + "||" + val2);
                         if (val1.equals("true") && val2.equals("false")) {
                             // T || F
                             stack.push("true");

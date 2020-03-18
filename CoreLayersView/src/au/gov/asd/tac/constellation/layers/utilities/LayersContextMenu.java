@@ -12,9 +12,16 @@ import au.gov.asd.tac.constellation.graph.manager.GraphManager;
 import au.gov.asd.tac.constellation.graph.visual.contextmenu.ContextMenuProvider;
 import au.gov.asd.tac.constellation.pluginframework.PluginExecution;
 import au.gov.asd.tac.constellation.visual.graphics3d.Vector3f;
+import java.awt.event.ActionEvent;
+import javafx.event.EventHandler;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
+import javafx.scene.control.TextInputDialog;
 import javax.swing.JOptionPane;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -28,6 +35,8 @@ public class LayersContextMenu implements ContextMenuProvider {
 
     private static final String LAYERS_MENU = "Layers";
     private static final String ADD_REMOVE_LAYER = "Add/Remove Selection from Layer";
+    private int enteredResult = 1;
+    
     
     @Override
     public List<String> getMenuPath(GraphElementType elementType) {
@@ -47,9 +56,27 @@ public class LayersContextMenu implements ContextMenuProvider {
     public void selectItem(String item, Graph graph, GraphElementType elementType, int elementId, Vector3f unprojected) {
         switch (item) {
             case ADD_REMOVE_LAYER:
-                // add
-                PluginExecution.withPlugin(new UpdateElementBitmaskPlugin()).executeLater(GraphManager.getDefault().getActiveGraph());
-                JOptionPane.showMessageDialog(null, "Adding/Removing from Layers...");                
+                Platform.runLater(() -> {
+                TextInputDialog td = new TextInputDialog(); 
+                td.setHeaderText("enter a layer to add to");
+                
+                Optional<String> result = td.showAndWait();
+                if (!result.isPresent()) {
+                    // no result - cancel
+                } else if (!td.getEditor().getText().equals("")) {
+                    enteredResult = Integer.parseInt(td.getEditor().getText());
+                }
+            }); 
+                
+        {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
+                PluginExecution.withPlugin(new UpdateElementBitmaskPlugin(enteredResult)).executeLater(GraphManager.getDefault().getActiveGraph());
+               
                 break;
             default:
                 break;

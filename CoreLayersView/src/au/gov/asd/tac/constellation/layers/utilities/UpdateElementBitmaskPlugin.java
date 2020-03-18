@@ -28,8 +28,10 @@ import au.gov.asd.tac.constellation.pluginframework.templates.SimpleEditPlugin;
  * @author aldebaran30701
  */
 public final class UpdateElementBitmaskPlugin extends SimpleEditPlugin {
+    final int targetMask;
 
-    public UpdateElementBitmaskPlugin() {
+    public UpdateElementBitmaskPlugin(final int bitmask) {
+        targetMask = bitmask;
     }
 
     @Override
@@ -48,7 +50,7 @@ public final class UpdateElementBitmaskPlugin extends SimpleEditPlugin {
                 // if selected, set a new bitmask
                 if(graph.getBooleanValue(vxSelectedAttr, vxId)){
                     
-                    graph.setIntValue(vxBitmaskAttributeId, vxId, graphBitMask == 1 ? 0b1 : 0b0101);
+                    graph.setIntValue(vxBitmaskAttributeId, vxId, graphBitMask == 1 ? 0b1 : (1 << targetMask-1));// change this bitmask to display L1 and target mask // (1 << targetMask-1) | (1 << 1)
                     int bitMask = graph.getIntValue(vxBitmaskAttributeId, vxId);
                     // display prompt and ask for input?
                     System.err.println("setting for vertex : " + Integer.toBinaryString(bitMask));
@@ -68,7 +70,7 @@ public final class UpdateElementBitmaskPlugin extends SimpleEditPlugin {
                 // if selected, set a new bitmask
                 if(graph.getBooleanValue(txSelected, txId)){
                     
-                    graph.setIntValue(txBitmaskAttributeId, txId, graphBitMask == 1 ? 0b1 : 0b0101);
+                    graph.setIntValue(txBitmaskAttributeId, txId, graphBitMask == 1 ? 0b1 : (1 << targetMask-1)); // change this bitmask to display L1 and target mask // (1 << targetMask-1) | (1 << 1)
                     int bitMask = graph.getIntValue(txBitmaskAttributeId, txId);
                     System.err.println("setting for transaction: " + Integer.toBinaryString(bitMask));
                     // display prompt and ask for input

@@ -57,7 +57,6 @@ enum Operator {
  */
 public class StoreGraph extends LockingTarget implements GraphWriteMethods, Serializable {
 
-
     private boolean avoidUpdate = false;
     private static final String SELECTED_FILTERMASK_ATTRIBUTE_LABEL = "selected_filter_bitmask";
     private static final String FILTERMASK_ATTRIBUTE_LABEL = "filter_bitmask";
@@ -1912,17 +1911,17 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
      * layer to show it on.
      */
     private int recalculateBitmask(final GraphElementType elementType, final int id) {
-            int bitmask = 0;//getIntValue(vertexFilterBitmaskAttrId, id);
+        int bitmask = 0;//getIntValue(vertexFilterBitmaskAttrId, id);
         if (elementType == GraphElementType.VERTEX) {
             if (vertexFilterBitmaskAttrId >= 0 && vertexFilterVisibilityAttrId >= 0) {
                 bitmask = getIntValue(vertexFilterBitmaskAttrId, id);
             }
-        } else if(elementType == GraphElementType.TRANSACTION){
+        } else if (elementType == GraphElementType.TRANSACTION) {
             if (transactionFilterBitmaskAttrId >= 0 && transactionFilterVisibilityAttrId >= 0) {
                 bitmask = getIntValue(transactionFilterBitmaskAttrId, id);
             }
-        }   
-        
+        }
+
         int i = 0;
         for (String query : LAYER_QUERIES) { // TODO: Concurrent Modification Exception sometiems - maybe with update of the queries?
             if ((layerPrefs.get(i) & 0b0011) == 3 && LAYER_QUERIES.get(i) != null) { // calculate bitmask for dynamic layers that are displayed
@@ -1955,7 +1954,7 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
         if (postfixQuery.equals("")) {
             return true;
         }
-        
+
         Operator currentOperand = Operator.NOTFOUND;
 
         String[] rules = postfixQuery.split(" "); // TODO: maybe we cannot split by space as it will cause issues if a space is parsed into the checking argument
@@ -2035,7 +2034,7 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
                                 } else {
                                     finalRes = false;
                                 }
-                                */
+                                 */
                                 break;
                             }
                             case GREATERTHAN: {
@@ -2116,7 +2115,6 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
                     avoidUpdate = false;
                 }
                 final float existingVisibility = getFloatValue(vertexFilterVisibilityAttrId, id);
-                //if ((bitmask & selectedFilterBitmask) > 0) { // - was this originally
                 if ((bitmask & currentVisibleMask) > 0) {
                     // A value > 0 indicates the object is mapped to at least one visible layer
                     if (existingVisibility != 1.0f) {
@@ -2140,22 +2138,22 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
                     setIntValue(transactionFilterBitmaskAttrId, id, bitmask);
                     avoidUpdate = false;
                 }
-                final float existingVisibility = getFloatValue(transactionFilterBitmaskAttrId, id);
+                final float existingVisibility = getFloatValue(transactionFilterVisibilityAttrId, id);
                 if ((bitmask & currentVisibleMask) > 0) {
                     if (existingVisibility != 1.0f) {
-                        attributeDescriptions[transactionFilterBitmaskAttrId].setFloat(id, 1.0f);
-                        attributeIndices[transactionFilterBitmaskAttrId].updateElement(id);
-                        attributeModificationCounters[transactionFilterBitmaskAttrId] += operationMode.getModificationIncrement();
+                        attributeDescriptions[transactionFilterVisibilityAttrId].setFloat(id, 1.0f);
+                        attributeIndices[transactionFilterVisibilityAttrId].updateElement(id);
+                        attributeModificationCounters[transactionFilterVisibilityAttrId] += operationMode.getModificationIncrement();
                     }
                 } else {
                     if (existingVisibility != 0.0f) {
-                        attributeDescriptions[transactionFilterBitmaskAttrId].setFloat(id, 0.0f);
-                        attributeIndices[transactionFilterBitmaskAttrId].updateElement(id);
-                        attributeModificationCounters[transactionFilterBitmaskAttrId] += operationMode.getModificationIncrement();                    }
+                        attributeDescriptions[transactionFilterVisibilityAttrId].setFloat(id, 0.0f);
+                        attributeIndices[transactionFilterVisibilityAttrId].updateElement(id);
+                        attributeModificationCounters[transactionFilterVisibilityAttrId] += operationMode.getModificationIncrement();
+                    }
                 }
             }
         }
-
     }
 
     // Check attribute being changed and make a decision on whehter object visibility needs to be recalculated
@@ -2186,7 +2184,7 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
         for (int i = 0; i < vertexCount; i++) {
             updateBitmask(GraphElementType.VERTEX, -1, selectedFilterBitmask, vStore.getElement(i));
         }
-        
+
         // Loop through all transactions and recalculate bitmasks
         final int transactionCount = getTransactionCount();
         for (int i = 0; i < transactionCount; i++) {
@@ -2258,7 +2256,7 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
 
     @Override
     public void setIntValue(final int attribute, final int id, final int value) {
-       if (graphEdit == null) {
+        if (graphEdit == null) {
             attributeDescriptions[attribute].setInt(id, value);
             attributeIndices[attribute].updateElement(id);
             attributeModificationCounters[attribute] += operationMode.getModificationIncrement();
@@ -2289,8 +2287,7 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
         // check if the change impacts an objects visibility
         if (selectedFilterBitmaskAttrId >= 0 && selectedFilterBitmaskAttrId == attribute) {
             updateAllBitmasks();
-        }
-        else if(!avoidUpdate){
+        } else if (!avoidUpdate) {
             updateBitmask(attribute, id);
         }
     }
@@ -2781,5 +2778,4 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
     public AttributeRegistry getAttributeRegistry() {
         return attributeRegistry;
     }
-
 }

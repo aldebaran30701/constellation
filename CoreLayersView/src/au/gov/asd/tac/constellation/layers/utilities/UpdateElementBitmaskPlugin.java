@@ -24,10 +24,12 @@ import au.gov.asd.tac.constellation.pluginframework.parameters.PluginParameters;
 import au.gov.asd.tac.constellation.pluginframework.templates.SimpleEditPlugin;
 
 /**
+ * Updates each selected element's bitmask for viewing them on different layers
  *
  * @author aldebaran30701
  */
 public final class UpdateElementBitmaskPlugin extends SimpleEditPlugin {
+
     final int targetMask;
 
     public UpdateElementBitmaskPlugin(final int bitmask) {
@@ -36,50 +38,37 @@ public final class UpdateElementBitmaskPlugin extends SimpleEditPlugin {
 
     @Override
     public void edit(final GraphWriteMethods graph, final PluginInteraction interaction, final PluginParameters parameters) throws InterruptedException, PluginException {
-        int graphBitMask = VisualConcept.GraphAttribute.SELECTEDFILTERMASK.get(graph);
+        int graphCurrentBitMask = VisualConcept.GraphAttribute.SELECTEDFILTERMASK.get(graph);
 
-        // VERTEX
+        // VERTEXES
         int vxSelectedAttr = VisualConcept.VertexAttribute.SELECTED.get(graph);
         int vxBitmaskAttributeId = VisualConcept.VertexAttribute.FILTERMASK.get(graph);
-        
+
         if (vxSelectedAttr != Graph.NOT_FOUND) {
             final int vxCount = graph.getVertexCount();
             for (int position = 0; position < vxCount; position++) {
                 final int vxId = graph.getVertex(position);
-                
-                // if selected, set a new bitmask
-                if(graph.getBooleanValue(vxSelectedAttr, vxId)){
-                    
-                    graph.setIntValue(vxBitmaskAttributeId, vxId, graphBitMask == 1 ? 0b1 : (1 << targetMask-1));// change this bitmask to display L1 and target mask // (1 << targetMask-1) | (1 << 1)
-                    int bitMask = graph.getIntValue(vxBitmaskAttributeId, vxId);
-                    // display prompt and ask for input?
-                    System.err.println("setting for vertex : " + Integer.toBinaryString(bitMask));
+
+                if (graph.getBooleanValue(vxSelectedAttr, vxId)) {
+                    graph.setIntValue(vxBitmaskAttributeId, vxId, graphCurrentBitMask == 1 ? 0b1 : graph.getIntValue(vxBitmaskAttributeId, vxId) | (1 << targetMask - 1));
                 }
             }
         }
-        
+
         // TRANSACTIONS
         int txSelected = VisualConcept.TransactionAttribute.SELECTED.get(graph);
         int txBitmaskAttributeId = VisualConcept.TransactionAttribute.FILTERMASK.get(graph);
-        
+
         if (txSelected != Graph.NOT_FOUND) {
             final int txCount = graph.getTransactionCount();
             for (int position = 0; position < txCount; position++) {
                 final int txId = graph.getTransaction(position);
 
-                // if selected, set a new bitmask
-                if(graph.getBooleanValue(txSelected, txId)){
-                    
-                    graph.setIntValue(txBitmaskAttributeId, txId, graphBitMask == 1 ? 0b1 : (1 << targetMask-1)); // change this bitmask to display L1 and target mask // (1 << targetMask-1) | (1 << 1)
-                    int bitMask = graph.getIntValue(txBitmaskAttributeId, txId);
-                    System.err.println("setting for transaction: " + Integer.toBinaryString(bitMask));
-                    // display prompt and ask for input
+                if (graph.getBooleanValue(txSelected, txId)) {
+                    graph.setIntValue(txBitmaskAttributeId, txId, graphCurrentBitMask == 1 ? 0b1 : graph.getIntValue(txBitmaskAttributeId, txId) | (1 << targetMask - 1));
                 }
             }
         }
-        
-        //int bitmaskAttributeId = VisualConcept.GraphAttribute.SELECTEDFILTERMASK.ensure(graph);
-        //graph.setIntValue(bitmaskAttributeId, 0, bitmask);
     }
 
     @Override
@@ -89,6 +78,6 @@ public final class UpdateElementBitmaskPlugin extends SimpleEditPlugin {
 
     @Override
     public String getName() {
-        return "Layers View: Update Graph Bitmask";
+        return "Layers View: Update Element Bitmask";
     }
 }

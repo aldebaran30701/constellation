@@ -29,6 +29,7 @@ import au.gov.asd.tac.constellation.graph.utilities.MultiValueStore;
 import au.gov.asd.tac.constellation.utilities.memory.MemoryManager;
 import au.gov.asd.tac.constellation.utilities.postfix.PostfixEvaluator;
 import au.gov.asd.tac.constellation.utilities.postfix.ShuntingYard;
+import au.gov.asd.tac.constellation.visual.camera.Camera;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -103,6 +104,15 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
     private int transactionFilterBitmaskAttrId = -1;
     private int vertexFilterVisibilityAttrId = -1;
     private int transactionFilterVisibilityAttrId = -1;
+    private int cameraAttrId = -1;
+    private int vSelectedAttrId = -1;
+    private int tSelectedAttrId = -1;
+    private int vXAttrId = -1;
+    private int vYAttrId = -1;
+    private int vZAttrId = -1;
+    private int tXAttrId = -1;
+    private int tYAttrId = -1;
+    private int tZAttrId = -1;
 
     // TODO: TEMP VARIABLE to test updates - This will have to be migrated to a graph attribute
     public static int currentVisibleMask = 1;
@@ -395,6 +405,15 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
         this.transactionFilterBitmaskAttrId = original.transactionFilterBitmaskAttrId;
         this.vertexFilterVisibilityAttrId = original.vertexFilterVisibilityAttrId;
         this.transactionFilterVisibilityAttrId = original.transactionFilterVisibilityAttrId;
+        this.tXAttrId = original.tXAttrId;
+        this.tYAttrId = original.tYAttrId;
+        this.tZAttrId = original.tZAttrId;
+        this.vXAttrId = original.vXAttrId;
+        this.vYAttrId = original.vYAttrId;
+        this.vZAttrId = original.vZAttrId;
+        this.vSelectedAttrId = original.vSelectedAttrId;
+        this.tSelectedAttrId = original.tSelectedAttrId;
+        this.cameraAttrId = original.cameraAttrId;
         this.layerPrefs.addAll(original.layerPrefs);
         this.setLayerQueries(original.LAYER_QUERIES); // TODO: Static queries arent going to be any good, a copy will result in editing of same query - Fix this
 
@@ -1658,7 +1677,18 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
                 transactionFilterVisibilityAttrId = attributeId;
             }
         }
+        
         selectedFilterBitmaskAttrId = SELECTED_FILTERMASK_ATTRIBUTE_LABEL.equals(label) ? attributeId : selectedFilterBitmaskAttrId;
+        cameraAttrId = Camera.ATTRIBUTE_NAME.equals(label) ? attributeId : cameraAttrId;
+        vSelectedAttrId = "selected".equals(label) ? (elementType == GraphElementType.VERTEX ? attributeId : vSelectedAttrId) : vSelectedAttrId;
+        vXAttrId = "x".equals(label) ? (elementType == GraphElementType.VERTEX ? attributeId : vXAttrId) : vXAttrId;
+        vYAttrId = "y".equals(label) ? (elementType == GraphElementType.VERTEX ? attributeId : vYAttrId) : vYAttrId;
+        vZAttrId = "z".equals(label) ? (elementType == GraphElementType.VERTEX ? attributeId : vZAttrId) : vZAttrId;
+        tSelectedAttrId = "selected".equals(label) ? (elementType == GraphElementType.TRANSACTION ? attributeId : tSelectedAttrId) : tSelectedAttrId;
+        tXAttrId = "x".equals(label) ? (elementType == GraphElementType.TRANSACTION ? attributeId : tXAttrId) : tXAttrId;
+        tYAttrId = "y".equals(label) ? (elementType == GraphElementType.TRANSACTION ? attributeId : tYAttrId) : tYAttrId;
+        tZAttrId = "z".equals(label) ? (elementType == GraphElementType.TRANSACTION ? attributeId : tZAttrId) : tZAttrId;
+        
         return attributeId;
     }
 
@@ -2351,7 +2381,11 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
                 }
             }
         }
-        updateBitmask(attribute, id);
+        // when not any movement of nodes
+        if(attribute != vXAttrId && attribute != vYAttrId  &&attribute != vZAttrId && attribute != tXAttrId && attribute != tYAttrId  &&attribute != tZAttrId ){
+            updateBitmask(attribute, id);
+        }
+        
     }
 
     @Override
@@ -2413,7 +2447,10 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
                 }
             }
         }
-        updateBitmask(attribute, id);
+        if(attribute != vSelectedAttrId && attribute != tSelectedAttrId){ // selected node ignore
+            updateBitmask(attribute, id);
+        }
+        
     }
 
     @Override
@@ -2505,8 +2542,11 @@ public class StoreGraph extends LockingTarget implements GraphWriteMethods, Seri
                     removeFromIndex(keyType, id);
                 }
             }
+        } 
+        // when not a camera change
+        if(attribute != cameraAttrId){
+            updateBitmask(attribute, id);
         }
-        updateBitmask(attribute, id);
     }
 
     @Override

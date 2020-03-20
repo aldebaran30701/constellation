@@ -703,7 +703,7 @@ public final class GraphVisualAccess implements VisualAccess {
 
     private void rebuildConnections() {
         final int linkCount = accessGraph.getLinkCount();
-        final int maxTranaxtions = graphMaxTransactions != Graph.NOT_FOUND ? accessGraph.getIntValue(graphMaxTransactions, 0) : VisualDefaults.DEFAULT_MAX_TRANSACTION_TO_DRAW;
+        final int maxTransactions = graphMaxTransactions != Graph.NOT_FOUND ? accessGraph.getIntValue(graphMaxTransactions, 0) : VisualDefaults.DEFAULT_MAX_TRANSACTION_TO_DRAW;
         final int connectionUpperBound = connectionMode == ConnectionMode.LINK ? linkCount : connectionMode == ConnectionMode.EDGE ? accessGraph.getEdgeCount() : accessGraph.getTransactionCount();
         connectionElementTypes = new GraphElementType[connectionUpperBound];
         connectionElementIds = new int[connectionUpperBound];
@@ -714,7 +714,7 @@ public final class GraphVisualAccess implements VisualAccess {
             linkStartingPositions[i] = currentPos;
             switch (connectionMode) {
                 case TRANSACTION:
-                    if (accessGraph.getLinkTransactionCount(linkId) <= maxTranaxtions) {
+                    if (accessGraph.getLinkTransactionCount(linkId) <= maxTransactions) {
                         for (int j = 0; j < accessGraph.getLinkTransactionCount(linkId); j++) {
                             connectionElementTypes[currentPos] = GraphElementType.TRANSACTION;
                             connectionElementIds[currentPos] = accessGraph.getLinkTransaction(linkId, j);

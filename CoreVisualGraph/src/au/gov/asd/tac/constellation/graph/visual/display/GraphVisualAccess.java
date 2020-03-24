@@ -1118,22 +1118,20 @@ public final class GraphVisualAccess implements VisualAccess {
                     final int linkId = connectionElementIds[connection];
                     for (int i = 0; i < accessGraph.getLinkTransactionCount(linkId); i++) {
                         final int transactionId = accessGraph.getLinkTransaction(linkId, i);
-                        linkVisibility = Math.max(linkVisibility, accessGraph.getFloatValue(transactionVisibility, transactionId));
+                        linkVisibility = Math.max(linkVisibility, accessGraph.getFloatValue(transactionLayerVisibility, transactionId)); // handle case of no layer vis - ie no layer
                     }
-                    float layerVisibility = transactionLayerVisibility != Graph.NOT_FOUND ? accessGraph.getFloatValue(transactionLayerVisibility, accessGraph.getLink(connection)) : VisualDefaults.DEFAULT_TRANSACTION_FILTER_VISIBILITY;
-                    return layerVisibility * linkVisibility;
+                    return linkVisibility;
                 case EDGE:
-                    float edgeVisbility = -1;
+                    float edgeVisibility = -1;
                     final int edgeId = connectionElementIds[connection];
                     for (int i = 0; i < accessGraph.getEdgeTransactionCount(edgeId); i++) {
                         final int transactionId = accessGraph.getEdgeTransaction(edgeId, i);
-                        edgeVisbility = Math.max(edgeVisbility, accessGraph.getFloatValue(transactionVisibility, transactionId));
+                        edgeVisibility = Math.max(edgeVisibility, accessGraph.getFloatValue(transactionLayerVisibility, transactionId));
                     }
-                    float edgeLayerVisibility = transactionLayerVisibility != Graph.NOT_FOUND ? accessGraph.getFloatValue(transactionLayerVisibility, accessGraph.getEdge(connection)) : VisualDefaults.DEFAULT_TRANSACTION_FILTER_VISIBILITY;
-                    return edgeLayerVisibility * edgeVisbility;
+                    return edgeVisibility;
                 case TRANSACTION:
                 default:
-                    float transLayerVisibility = transactionLayerVisibility != Graph.NOT_FOUND ? accessGraph.getFloatValue(transactionLayerVisibility, accessGraph.getTransaction(connection)) : VisualDefaults.DEFAULT_TRANSACTION_FILTER_VISIBILITY;
+                    float transLayerVisibility = transactionLayerVisibility != Graph.NOT_FOUND ? accessGraph.getFloatValue(transactionLayerVisibility, connectionElementIds[connection]) : VisualDefaults.DEFAULT_TRANSACTION_FILTER_VISIBILITY;
                     return transLayerVisibility * accessGraph.getFloatValue(transactionVisibility, connectionElementIds[connection]);
             }
         }

@@ -63,7 +63,7 @@ public class QueryEvaluatorNGTest {
         List<String> returning = QueryEvaluator.tokeniser(infix);
         assertEquals(returning.get(0), result1);
         assertEquals(returning.size(), results.size());
-        assertEquals(1, 0);
+        assertEquals(0, 1);
     }
 
     @Test

@@ -70,6 +70,7 @@ jobs:
         mkdir -p ${HOME}/.ivy2/cache
         chmod +x /home/runner/work/constellation/constellation/buildutilities/run-tests.sh
         chmod +x /home/runner/work/constellation/constellation/buildutilities/sonar.sh
+        chmod +x /home/runner/work/constellation/constellation/buildutilities/sonar_1.sh
         chmod +x /home/runner/work/constellation/constellation/buildutilities/functions.sh
         docker pull "${RUNNER_IMAGE}"
         docker run --mount "type=bind,source=/home/runner/work/constellation/constellation/,target=/home/runner/work/constellation/constellation/" --mount "type=bind,source=${HOME}/.ivy2/cache,target=/root/.ivy2/cache" --workdir /home/runner/work/constellation/constellation/ "${RUNNER_IMAGE}" buildutilities/sonar_1.sh

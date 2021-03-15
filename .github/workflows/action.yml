@@ -68,14 +68,13 @@ jobs:
         # Run Sonar Checks55
     - name: run sonar2
       run: |
-        docker run --mount "type=bind,source=/home/runner/work/constellation/constellation/,target=/home/runner/work/constellation/constellation/" \
+        docker run --mount "type=bind,source=/home/runner/work/constellation/constellation/,target=./root/" \
         --rm \
         -e SONAR_PROJECTKEY=aldebaran30701_constellation \
         -e SONAR_ORGANIZATION=aldebaran30701 \
         -e SONAR_HOST_URL="http://${SONARCLOUD_URL}" \
         -e SONAR_LOGIN=${SONAR_TOKEN} \
         -v "aldebaran30701:/usr/src" \
-        echo $pwd
         sonarsource/sonar-scanner-cli
         
     - name: Run Sonar

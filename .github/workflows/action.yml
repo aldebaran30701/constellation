@@ -75,6 +75,7 @@ jobs:
         -e SONAR_PROJECTKEY=aldebaran30701_constellation \
         -e SONAR_ORGANIZATION=aldebaran30701 \
         -v "aldebaran30701:/usr/src" \
+        echo $pwd
         sonarsource/sonar-scanner-cli
         
     - name: Run Sonar

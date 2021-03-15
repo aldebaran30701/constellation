@@ -75,7 +75,7 @@ jobs:
         -e SONAR_HOST_URL="http://${SONARCLOUD_URL}" \
         -e SONAR_LOGIN=${SONAR_TOKEN} \
         -v "aldebaran30701:/usr/src" \
-        sonarsource/sonar-scanner-cli -Dsonar.projectKey=myproject
+        sonarsource/sonar-scanner-cli -Dsonar.projectKey=aldebaran30701_constellation -Dsonar.organization=aldebaran30701
         
     - name: Run Sonar
       run: |

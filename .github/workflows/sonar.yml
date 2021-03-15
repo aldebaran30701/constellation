@@ -35,4 +35,5 @@ jobs:
         with:
           args: >
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.java.binaries=./build
 

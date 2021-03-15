@@ -22,7 +22,6 @@ jobs:
       PULL_REQUEST_NUMBER: "${{ github.event.number }}"
       SOURCE_BRANCH: "${{ github.head_ref }}"
       SONARCLOUD_URL: sonarcloud.io
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}#h
 
     steps:
     - name: Save Variables

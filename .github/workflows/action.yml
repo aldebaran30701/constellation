@@ -72,6 +72,8 @@ jobs:
         --rm \
         -e SONAR_HOST_URL="http://${SONARCLOUD_URL}" \
         -e SONAR_LOGIN=${SONAR_TOKEN} \
+        -e SONAR_PROJECTKEY=aldebaran30701_constellation \
+        -e SONAR_ORGANIZATION=aldebaran30701 \
         -v "aldebaran30701:/usr/src" \
         sonarsource/sonar-scanner-cli
         

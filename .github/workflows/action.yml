@@ -65,31 +65,27 @@ jobs:
      #   docker pull "${RUNNER_IMAGE}"
      #   docker run --mount "type=bind,source=/home/runner/work/constellation/constellation/,target=/home/runner/work/constellation/constellation/" --mount "type=bind,source=${HOME}/.ivy2/cache,target=/root/.ivy2/cache" --workdir /home/runner/work/constellation/constellation/ "${RUNNER_IMAGE}" buildutilities/run-tests.sh
 
-    - name: Run Tests2
-      run: |
-        mkdir -p ${HOME}/.ivy2/cache
-        chmod +x /home/runner/work/constellation/constellation/buildutilities/run-tests.sh
-        chmod +x /home/runner/work/constellation/constellation/buildutilities/sonar.sh
-        chmod +x /home/runner/work/constellation/constellation/buildutilities/functions.sh
-        docker pull "${RUNNER_IMAGE}"
-        docker run --mount "type=bind,source=/home/runner/work/constellation/constellation/,target=/home/runner/work/constellation/constellation/" --mount "type=bind,source=${HOME}/.ivy2/cache,target=/root/.ivy2/cache" --workdir /home/runner/work/constellation/constellation/ "${RUNNER_IMAGE}" \
-        --rm \
-        -e SONAR_LOGIN=${SONAR_TOKEN} \
-        -v "$PWD:/usr/src" \
-        sonarsource/sonar-scanner-cli -Dsonar.login=${SONAR_TOKEN} -Dsonar.projectKey=aldebaran30701_constellation -Dsonar.organization=aldebaran30701 -Dsonar.scm.provider=git -Dsonar.pullrequest.github.repository=aldebaran30701/constellation -Dsonar.pullrequest.provider=github -Dsonar.pullrequest.github.endpoint=https://api.github.com/ -Dsonar.projectBaseDir=./ -Dsonar.sources=./src -Dsonar.java.binaries=. -Dsonar.java.libraries=../CoreDependencies/release/modules/ext/*.jar
+  #  - name: Run Tests2
+  #    run: |
+  #      mkdir -p ${HOME}/.ivy2/cache
+  #      chmod +x /home/runner/work/constellation/constellation/buildutilities/run-tests.sh
+  #      chmod +x /home/runner/work/constellation/constellation/buildutilities/sonar.sh
+  #      chmod +x /home/runner/work/constellation/constellation/buildutilities/functions.sh
+  #      docker pull "${RUNNER_IMAGE}"
+  #      docker run --mount "type=bind,source=/home/runner/work/constellation/constellation/,target=/home/runner/work/constellation/constellation/" --mount "type=bind,source=${HOME}/.ivy2/cache,target=/root/.ivy2/cache" --workdir /home/runner/work/constellation/constellation/ "${RUNNER_IMAGE}" sonarsource/sonar-scanner-cli -Dsonar.login=${SONAR_TOKEN} -Dsonar.projectKey=aldebaran30701_constellation -Dsonar.organization=aldebaran30701 -Dsonar.scm.provider=git -Dsonar.pullrequest.github.repository=aldebaran30701/constellation -Dsonar.pullrequest.provider=github -Dsonar.pullrequest.github.endpoint=https://api.github.com/ -Dsonar.projectBaseDir=./ -Dsonar.sources=./src -Dsonar.java.binaries=. -Dsonar.java.libraries=../CoreDependencies/release/modules/ext/*.jar
         
 
         # Run Sonar Checks55
-    - name: run sonar2
-      run: |
-        docker run --mount "type=bind,source=/home/runner/work/constellation/constellation/,target=/home/runner/work/constellation/constellation/" \
-        --rm \
-        -e SONAR_PROJECTKEY=aldebaran30701_constellation \
-        -e SONAR_ORGANIZATION=aldebaran30701 \
-        -e SONAR_HOST_URL="http://${SONARCLOUD_URL}" \
-        -e SONAR_LOGIN=${SONAR_TOKEN} \
-        -v "$PWD:/usr/src" \
-        sonarsource/sonar-scanner-cli -Dsonar.projectKey=aldebaran30701_constellation -Dsonar.organization=aldebaran30701 -Dsonar.scm.provider=git -Dsonar.pullrequest.github.repository=aldebaran30701/constellation -Dsonar.pullrequest.provider=github -Dsonar.pullrequest.github.endpoint=https://api.github.com/ -Dsonar.projectBaseDir=./ -Dsonar.sources=./src -Dsonar.java.binaries=. -Dsonar.java.libraries=../CoreDependencies/release/modules/ext/*.jar
+    #- name: run sonar2
+    #  run: |
+    #    docker run --mount "type=bind,source=/home/runner/work/constellation/constellation/,target=/home/runner/work/constellation/constellation/" \
+   #     --rm \
+    #    -e SONAR_PROJECTKEY=aldebaran30701_constellation \
+    #    -e SONAR_ORGANIZATION=aldebaran30701 \
+    #    -e SONAR_HOST_URL="http://${SONARCLOUD_URL}" \
+    #    -e SONAR_LOGIN=${SONAR_TOKEN} \
+    #    -v "$PWD:/usr/src" \
+    #    sonarsource/sonar-scanner-cli -Dsonar.projectKey=aldebaran30701_constellation -Dsonar.organization=aldebaran30701 -Dsonar.scm.provider=git -Dsonar.pullrequest.github.repository=aldebaran30701/constellation -Dsonar.pullrequest.provider=github -Dsonar.pullrequest.github.endpoint=https://api.github.com/ -Dsonar.projectBaseDir=./ -Dsonar.sources=./src -Dsonar.java.binaries=. -Dsonar.java.libraries=../CoreDependencies/release/modules/ext/*.jar
         
     - name: Run Sonar
       run: |

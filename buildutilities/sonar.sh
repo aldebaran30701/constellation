@@ -44,6 +44,7 @@ if [ ! -z $2 ]; then
       -Dsonar.pullrequest.provider=github \
       -Dsonar.pullrequest.github.endpoint=https://api.github.com/ \
       -Dsonar.projectBaseDir=./ \
+      -Dsonar.modules=ProjectUpdater,CoreAlgorithmPlugins,CoreAnalyticSchema,CoreAnalyticView,CoreArrangementPlugins,CoreAttributeEditorView,CoreConversationView,CoreDataAccessView,CoreDependencies,CoreFindView,CoreFunctionality,CoreGraphFile,CoreGraphFramework,CoreGraphNode,CoreGraphUtilities,CoreHistogramView,CoreImportExportPlugins,CoreInteractiveGraph,CoreLayersView,CoreMapView,CoreNamedSelectionView,CoreOpenGLDisplay,CorePluginFramework,CorePluginReporterView,CorePreferences,CoreQualityControlView,CoreScatterPlotView,CoreSchemaView,CoreScriptingView,CoreSecurity,CoreTableView,CoreTesting,CoreTimelineView,CoreUtilities,CoreViewFramework,CoreVisualGraph,CoreVisualSchema,CoreWebServer,CoreWebView,CoreWelcomeView \
       -Dsonar.sources=./src \
       -Dsonar.host.url=http://sonarcloud.io \
       -Dsonar.java.binaries=. \

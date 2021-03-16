@@ -36,7 +36,7 @@ if [ ! -z $2 ]; then
     echo "This is a Pull Request"
     SONAR_PULLREQUEST_BRANCH="$(echo $1 | awk '{split($0,a,"/"); print a[1]}')/$4"
     sonar-scanner \
-      -Dsonar.login="${SONAR_TOKEN}" \
+      -Dsonar.login=$5 \
       -Dsonar.projectKey=aldebaran30701_constellation \
       -Dsonar.organization=aldebaran30701 \
       -Dsonar.scm.provider=git \

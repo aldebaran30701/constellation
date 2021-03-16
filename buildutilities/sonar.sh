@@ -31,7 +31,7 @@ if [ ! -z $2 ]; then
   else
     echo "This is a Pull Request"
     SONAR_PULLREQUEST_BRANCH="$(echo $1 | awk '{split($0,a,"/"); print a[1]}')/$4"
-    sonar-scanner \
+    sonar-scanner-4.0.0.1744-linux \
       -Dsonar.login="${SONAR_TOKEN}" \
       -Dsonar.pullrequest.key=$2 \
       -Dsonar.pullrequest.branch="${SONAR_PULLREQUEST_BRANCH}" \
@@ -39,7 +39,7 @@ if [ ! -z $2 ]; then
   fi
 else
 echo "Not a Pull Request"
-  sonar-scanner \
+  sonar-scanner-4.0.0.1744-linux \
     -Dsonar.login="${SONAR_TOKEN}" \
     -Dsonar.branch.name=$3
 fi

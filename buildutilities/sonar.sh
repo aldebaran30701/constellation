@@ -48,7 +48,7 @@ if [ ! -z $2 ]; then
       -Dsonar.sources=./src \
       -Dsonar.host.url=http://sonarcloud.io \
       -Dsonar.java.binaries=. \
-      -Dsonar.java.libraries=../CoreDependencies/release/modules/ext/*.jar \
+      -Dsonar.java.libraries=../CoreDependencies/release/modules/ext/ \
       -Dsonar.pullrequest.key=$2 \
       -Dsonar.pullrequest.branch="${SONAR_PULLREQUEST_BRANCH}" \
       -Dsonar.pullrequest.base=$3

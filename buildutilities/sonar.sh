@@ -25,6 +25,7 @@ mv sonar-scanner-4.0.0.1744-linux /var/opt/sonar-scanner
 export PATH="$PATH:/var/opt/sonar-scanner/bin"
 source ~/.bashrc
 echo $PATH
+cd /home/runner/work/constellation/constellation/
 echo $(ls)
 echo "Installation completed successfully."
 

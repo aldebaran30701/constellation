@@ -45,6 +45,7 @@ if [ ! -z $2 ]; then
     sonar-scanner -X \
       -Dproject.settings=/home/runner/work/constellation/constellation/sonar-project.properties \
       -Dsonar.login=$5 \
+      -Dsonar.projectBaseDir=/home/runner/work/constellation/constellation/
       -Dsonar.pullrequest.key=$2 \
       -Dsonar.pullrequest.branch="${SONAR_PULLREQUEST_BRANCH}" \
       -Dsonar.pullrequest.base=$3

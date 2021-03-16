@@ -22,7 +22,7 @@ if [ -d "/var/opt/sonar-scanner-4.0.0.1744-linux" ];then
     rm -rf /var/opt/sonar-scanner-4.0.0.1744-linux
 fi
 mv sonar-scanner-4.0.0.1744-linux /var/opt/sonar-scanner
-export PATH="$HOME/var/opt:$PATH"
+export PATH="$PATH:/var/opt/sonar-scanner/bin"
 source ~/.bashrc
 echo $PATH
 cd /var/opt

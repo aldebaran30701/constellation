@@ -25,6 +25,8 @@ mv sonar-scanner-4.0.0.1744-linux /var/opt/sonar-scanner
 export PATH="$HOME/var/opt:$PATH"
 source ~/.bashrc
 echo $PATH
+cd /var/opt
+echo ls
 echo "Installation completed successfully."
 
 if [ ! -z $2 ]; then

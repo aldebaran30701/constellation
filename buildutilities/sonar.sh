@@ -45,6 +45,7 @@ if [ ! -z $2 ]; then
       -Dsonar.pullrequest.github.endpoint=https://api.github.com/ \
       -Dsonar.projectBaseDir=./ \
       -Dsonar.sources=./src \
+      -Dsonar.host.url=http://sonarcloud.io \
       -Dsonar.java.binaries=. \
       -Dsonar.java.libraries=../CoreDependencies/release/modules/ext/*.jar \
       -Dsonar.pullrequest.key=$2 \

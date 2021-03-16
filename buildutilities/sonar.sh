@@ -37,6 +37,16 @@ if [ ! -z $2 ]; then
     SONAR_PULLREQUEST_BRANCH="$(echo $1 | awk '{split($0,a,"/"); print a[1]}')/$4"
     sonar-scanner \
       -Dsonar.login="${SONAR_TOKEN}" \
+      -Dsonar.projectKey=aldebaran30701_constellation \
+      -Dsonar.organization=aldebaran30701 \
+      -Dsonar.scm.provider=git \
+      -Dsonar.pullrequest.github.repository=aldebaran30701/constellation \
+      -Dsonar.pullrequest.provider=github \
+      -Dsonar.pullrequest.github.endpoint=https://api.github.com/ \
+      -Dsonar.projectBaseDir=./ \
+      -Dsonar.sources=./src \
+      -Dsonar.java.binaries=. \
+      -Dsonar.java.libraries=../CoreDependencies/release/modules/ext/*.jar \
       -Dsonar.pullrequest.key=$2 \
       -Dsonar.pullrequest.branch="${SONAR_PULLREQUEST_BRANCH}" \
       -Dsonar.pullrequest.base=$3

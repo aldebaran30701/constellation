@@ -21,7 +21,7 @@ echo "Installing to opt..."
 if [ -d "/var/opt/sonar-scanner-4.0.0.1744-linux" ];then
     rm -rf /var/opt/sonar-scanner-4.0.0.1744-linux
 fi
-mv sonar-scanner-4.0.0.1744-linux /var/opt
+mv sonar-scanner-4.0.0.1744-linux /bin/sonar-scanner
 
 echo "Installation completed successfully."
 
@@ -31,7 +31,7 @@ if [ ! -z $2 ]; then
   else
     echo "This is a Pull Request"
     SONAR_PULLREQUEST_BRANCH="$(echo $1 | awk '{split($0,a,"/"); print a[1]}')/$4"
-    /var/opt/sonar-scanner \
+    sonar-scanner \
       -Dsonar.login="${SONAR_TOKEN}" \
       -Dsonar.pullrequest.key=$2 \
       -Dsonar.pullrequest.branch="${SONAR_PULLREQUEST_BRANCH}" \
@@ -39,7 +39,7 @@ if [ ! -z $2 ]; then
   fi
 else
 echo "Not a Pull Request"
-  /var/opt/sonar-scanner \
+  sonar-scanner \
     -Dsonar.login="${SONAR_TOKEN}" \
     -Dsonar.branch.name=$3
 fi

@@ -42,7 +42,7 @@ if [ ! -z $2 ]; then
   else
     echo "This is a Pull Request"
     SONAR_PULLREQUEST_BRANCH="$(echo $1 | awk '{split($0,a,"/"); print a[1]}')/$4"
-    sonar-scanner \
+    sonar-scanner -X \
       -Dproject.settings=/home/runner/work/constellation/constellation/sonar-project.properties \
       -Dsonar.login=$5 \
       -Dsonar.pullrequest.key=$2 \

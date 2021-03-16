@@ -2,6 +2,16 @@
 
 source buildutilities/functions.sh
 
+echo "Updating dependencies and building."
+
+ant \
+  -Dnbplatform.active.dir="${NETBEANS_HOME}" \
+  -Dnbplatform.default.netbeans.dest.dir="${NETBEANS_HOME}" \
+  -Dnbplatform.default.harness.dir="${NETBEANS_HOME}"/harness \
+  -Dupdate.dependencies=true \
+  -Dbuild.compiler.debug=true update-dependencies-clean-build
+echo "Finished Updating dependencies and building."
+
 title "Run Sonar Scanning"
 
 cd /tmp || exit
@@ -24,9 +34,6 @@ fi
 mv sonar-scanner-4.0.0.1744-linux /var/opt/sonar-scanner
 export PATH="$PATH:/var/opt/sonar-scanner/bin"
 source ~/.bashrc
-echo $PATH
-cd /home/runner/work/constellation/constellation/
-echo $(ls)
 echo "Installation completed successfully."
 
 if [ ! -z $2 ]; then

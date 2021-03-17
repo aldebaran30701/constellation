@@ -4,7 +4,7 @@ set -euo pipefail
 source githubutilities/functions.sh
 
 title "Run Core Build"
-
+echo $PWD
 ant \
   -Dnbplatform.active.dir="${NETBEANS_HOME}" \
   -Dnbplatform.default.netbeans.dest.dir="${NETBEANS_HOME}" \

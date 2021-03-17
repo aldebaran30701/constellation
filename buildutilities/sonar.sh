@@ -10,6 +10,7 @@ ant \
   -Dnbplatform.default.harness.dir="${NETBEANS_HOME}"/harness \
   -Dupdate.dependencies=true \
   -Dbuild.compiler.debug=true update-dependencies-clean-build
+
 echo "Finished Updating dependencies and building."
 
 title "Run Sonar Scanning"
@@ -41,8 +42,8 @@ if [ ! -z $2 ]; then
   else
     SONAR_PULLREQUEST_BRANCH="$(echo $1 | awk '{split($0,a,"/"); print a[1]}')/$4"
     sonar-scanner \
-      -Dproject.settings=/home/runner/work/constellation/constellation/sonar-project.properties \
       -Dsonar.login=$5 \
+      -Dproject.settings=/home/runner/work/constellation/constellation/sonar-project.properties \
       -Dsonar.pullrequest.key=$2 \
       -Dsonar.pullrequest.branch="${SONAR_PULLREQUEST_BRANCH}" \
       -Dsonar.pullrequest.base=$3

@@ -37,7 +37,7 @@ jobs:
     # Before caching, print and delete all cached ivy properties
     - name: Remove Ivy Properties
       if: steps.cache-dependencies.outputs.cache-hit == 'true'
-      run: find "${HOME}" -name ".ivy2" -ls
+      run: find "/root/" -name ".ivy2" -ls
       
       # Update the project dependencies and run tests
     - name: Run Tests

@@ -22,7 +22,7 @@ jobs:
       uses: actions/checkout@v1
       
     - name: Create Cache Folder
-      with: mkdir -p ${HOME}/.ivy2/cache
+      run: mkdir -p ${HOME}/.ivy2/cache
 
       # Cache the ivy dependencies to the home directory.
     - name: Initialise Cache
@@ -74,7 +74,7 @@ jobs:
       uses: actions/checkout@v1
       
     - name: Create Cache Folder
-      with: mkdir -p ${HOME}/.ivy2/cache
+      run: mkdir -p ${HOME}/.ivy2/cache
       
     - name: Run Sonar
       run: |

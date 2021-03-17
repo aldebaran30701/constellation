@@ -40,7 +40,7 @@ jobs:
     - name: Remove Ivy Properties
       if: steps.cache-dependencies.outputs.cache-hit == 'true'
       run: |
-        [ -d ""${HOME}"/.ivy2/cache" ] && find "${HOME}"/.ivy2/cache -name "ivydata-*.properties" -print -delete
+        [ -d "${HOME}"/.ivy2/cache ] && find "${HOME}"/.ivy2/cache -name "ivydata-*.properties" -print -delete
 
       # Update the project dependencies and run tests
     - name: Run Tests

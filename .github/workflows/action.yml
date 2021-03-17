@@ -14,25 +14,9 @@ jobs:
     name: Unit Tests
     runs-on: ubuntu-latest
     env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       RUNNER_IMAGE: "constellationapplication/netbeans-runner:12"
-      TRAVIS_REPO_SLUG: "${{ github.repository }}"
-      DESTINATION_BRANCH: "${{ github.base_ref }}"
-      PULL_REQUEST_NUMBER: "${{ github.event.number }}"
-      SOURCE_BRANCH: "${{ github.head_ref }}"
-      SONARCLOUD_URL: sonarcloud.io
 
     steps:
-    - name: Save Variables
-      id: extract_variables
-      run: |
-        echo "##[set-output name=prsourcelocation;]$(echo ${GITHUB_REPOSITORY})"
-        echo "##[set-output name=destinationbranch;]$(echo ${DESTINATION_BRANCH})"
-        echo "##[set-output name=prnumber;]$(echo ${PULL_REQUEST_NUMBER})"
-        echo "##[set-output name=sourcebranch;]$(echo ${SOURCE_BRANCH})"
-        echo "##[set-output name=sonartoken;]$(echo ${SONAR_TOKEN})"
-
       # Checkout this commit
     - name: Checkout Branch
       uses: actions/checkout@v1
@@ -57,45 +41,35 @@ jobs:
           ${{ runner.os }}-
           
       # Update the project dependencies and run tests
-    #- name: Run Tests
-     # run: |
-     #   mkdir -p ${HOME}/.ivy2/cache
-      #  chmod +x /home/runner/work/constellation/constellation/buildutilities/run-tests.sh
-     #   chmod +x /home/runner/work/constellation/constellation/buildutilities/sonar.sh
-     ##   chmod +x /home/runner/work/constellation/constellation/buildutilities/functions.sh
-     #   docker pull "${RUNNER_IMAGE}"
-     #   docker run --mount "type=bind,source=/home/runner/work/constellation/constellation/,target=/home/runner/work/constellation/constellation/" --mount "type=bind,source=${HOME}/.ivy2/cache,target=/root/.ivy2/cache" --workdir /home/runner/work/constellation/constellation/ "${RUNNER_IMAGE}" buildutilities/run-tests.sh
-
-  #  - name: Run Tests2
-  #    run: |
-  #      mkdir -p ${HOME}/.ivy2/cache
-  #      chmod +x /home/runner/work/constellation/constellation/buildutilities/run-tests.sh
-  #      chmod +x /home/runner/work/constellation/constellation/buildutilities/sonar.sh
-  #      chmod +x /home/runner/work/constellation/constellation/buildutilities/functions.sh
-  #      docker pull "${RUNNER_IMAGE}"
-  #      docker run --mount "type=bind,source=/home/runner/work/constellation/constellation/,target=/home/runner/work/constellation/constellation/" --mount "type=bind,source=${HOME}/.ivy2/cache,target=/root/.ivy2/cache" --workdir /home/runner/work/constellation/constellation/ "${RUNNER_IMAGE}" sonarsource/sonar-scanner-cli -Dsonar.login=${SONAR_TOKEN} -Dsonar.projectKey=aldebaran30701_constellation -Dsonar.organization=aldebaran30701 -Dsonar.scm.provider=git -Dsonar.pullrequest.github.repository=aldebaran30701/constellation -Dsonar.pullrequest.provider=github -Dsonar.pullrequest.github.endpoint=https://api.github.com/ -Dsonar.projectBaseDir=./ -Dsonar.sources=./src -Dsonar.java.binaries=. -Dsonar.java.libraries=../CoreDependencies/release/modules/ext/*.jar
-        
-
-        # Run Sonar Checks55
-    #- name: run sonar2
-    #  run: |
-    #    docker run --mount "type=bind,source=/home/runner/work/constellation/constellation/,target=/home/runner/work/constellation/constellation/" \
-   #     --rm \
-    #    -e SONAR_PROJECTKEY=aldebaran30701_constellation \
-    #    -e SONAR_ORGANIZATION=aldebaran30701 \
-    #    -e SONAR_HOST_URL="http://${SONARCLOUD_URL}" \
-    #    -e SONAR_LOGIN=${SONAR_TOKEN} \
-    #    -v "$PWD:/usr/src" \
-    #    sonarsource/sonar-scanner-cli -Dsonar.projectKey=aldebaran30701_constellation -Dsonar.organization=aldebaran30701 -Dsonar.scm.provider=git -Dsonar.pullrequest.github.repository=aldebaran30701/constellation -Dsonar.pullrequest.provider=github -Dsonar.pullrequest.github.endpoint=https://api.github.com/ -Dsonar.projectBaseDir=./ -Dsonar.sources=./src -Dsonar.java.binaries=. -Dsonar.java.libraries=../CoreDependencies/release/modules/ext/*.jar
-        
-    - name: Run Sonar
+    - name: Run Tests
       run: |
         mkdir -p ${HOME}/.ivy2/cache
         chmod +x /home/runner/work/constellation/constellation/buildutilities/run-tests.sh
+        docker pull "${RUNNER_IMAGE}"
+        docker run --mount "type=bind,source=/home/runner/work/constellation/constellation/,target=/home/runner/work/constellation/constellation/" --mount "type=bind,source=${HOME}/.ivy2/cache,target=/root/.ivy2/cache" --workdir /home/runner/work/constellation/constellation/ "${RUNNER_IMAGE}" buildutilities/run-tests.sh
+
+  sonar_scan:
+    name: Sonar Scanning
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      RUNNER_IMAGE: "constellationapplication/netbeans-runner:12"
+      TRAVIS_REPO_SLUG: "${{ github.repository }}"
+      DESTINATION_BRANCH: "${{ github.base_ref }}"
+      PULL_REQUEST_NUMBER: "${{ github.event.number }}"
+      SOURCE_BRANCH: "${{ github.head_ref }}"
+      SONARCLOUD_URL: sonarcloud.io
+
+    steps:
+      # Checkout this commit
+    - name: Checkout Branch
+      uses: actions/checkout@v1
+      
+    - name: Run Sonar
+      run: |
+        mkdir -p ${HOME}/.ivy2/cache
         chmod +x /home/runner/work/constellation/constellation/buildutilities/sonar.sh
-        chmod +x /home/runner/work/constellation/constellation/buildutilities/functions.sh
         docker pull "${RUNNER_IMAGE}"
         docker run --mount "type=bind,source=/home/runner/work/constellation/constellation/,target=/home/runner/work/constellation/constellation/" --mount "type=bind,source=${HOME}/.ivy2/cache,target=/root/.ivy2/cache" --workdir /home/runner/work/constellation/constellation/ "${RUNNER_IMAGE}" buildutilities/sonar.sh "${GITHUB_REPOSITORY}" "${PULL_REQUEST_NUMBER}" "${DESTINATION_BRANCH}" "${SOURCE_BRANCH}" "${SONAR_TOKEN}"
         
-    #- name: SonarCloud Scan
-    #  uses: SonarSource/sonarcloud-github-action@master

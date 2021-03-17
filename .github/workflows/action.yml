@@ -40,21 +40,13 @@ jobs:
       run: |
         cd ~/work
         ls
+      
       # Update the project dependencies and run tests
-    - name: Update Dependencies
+    - name: Run Tests
       run: |
-        chmod +x /home/runner/work/constellation/constellation/githubutilities/update-dependencies.sh
-        update-dependencies.sh
-        #docker pull "${RUNNER_IMAGE}"
-        #docker run --mount "type=bind,source=/home/runner/work/constellation/constellation/,target=/root/constellation/" --mount "type=bind,source=${HOME}/.ivy2/cache,target=/root/.ivy2/cache" --workdir /root/constellation/ "${RUNNER_IMAGE}" githubutilities/update-dependencies.sh
-
- 
-      # Update the project dependencies and run tests
-    #- name: Run Tests
-    #  run: |
-    #    chmod +x /home/runner/work/constellation/constellation/githubutilities/run-tests.sh
-    #    docker pull "${RUNNER_IMAGE}"
-    #    docker run --mount "type=bind,source=/home/runner/work/constellation/constellation/,target=/root/constellation/" --mount "type=bind,source=${HOME}/.ivy2/cache,target=/root/.ivy2/cache" --workdir /root/constellation/ "${RUNNER_IMAGE}" githubutilities/run-tests.sh
+        chmod +x /home/runner/work/constellation/constellation/githubutilities/run-tests.sh
+        docker pull "${RUNNER_IMAGE}"
+        docker run --mount "type=bind,source=/home/runner/work/constellation/constellation/,target=/root/constellation/" --mount "type=bind,source=${HOME}/.ivy2/cache,target=/root/.ivy2/cache" --workdir /root/constellation/ "${RUNNER_IMAGE}" githubutilities/run-tests.sh
 
   sonar_scan:
     name: Sonar Scanning

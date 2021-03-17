@@ -33,16 +33,12 @@ jobs:
       with:
         path: ${HOME}/.ivy2/cache
         key: ${{ runner.os }}-dependencies-${{ env.cache-name }}-${{ hashFiles('CoreDependencies/src/ivy.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-dependencies-${{ env.cache-name }}-
-          ${{ runner.os }}-dependencies-
-          ${{ runner.os }}-
           
     # Before caching, print and delete all cached ivy properties
     - name: Remove Ivy Properties
       if: steps.cache-dependencies.outputs.cache-hit == 'true'
-      run: find "${HOME}"/.ivy2/cache -name "ivydata-*.properties" -print -delete
-
+      run: find "${HOME}" -name ".ivy2" -ls
+      
       # Update the project dependencies and run tests
     - name: Run Tests
       run: |

@@ -38,8 +38,9 @@ jobs:
     - name: Remove Ivy Properties
       if: steps.cache-dependencies.outputs.cache-hit == 'true'
       run: |
-        cd ~/work
-        ls
+        apt update
+        apt-get install tree
+        tree -a /home/
       
       # Update the project dependencies and run tests
     - name: Run Tests

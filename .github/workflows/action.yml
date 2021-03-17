@@ -21,8 +21,8 @@ jobs:
     - name: Checkout Branch
       uses: actions/checkout@v1
       
-    - name: Create Cache Folder
-      run: mkdir -p ${HOME}/.ivy2/cache
+    #- name: Create Cache Folder
+     # run: mkdir -p ${HOME}/.ivy2/cache
 
       # Cache the ivy dependencies to the home directory.
     - name: Initialise Cache

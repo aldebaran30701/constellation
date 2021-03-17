@@ -21,10 +21,6 @@ jobs:
     - name: Checkout Branch
       uses: actions/checkout@v1
 
-      # Before caching, print and delete all cached ivy properties
-    - name: Remove Ivy Properties
-      if: steps.cache-dependencies.outputs.cache-hit == 'true'
-      run: find "${HOME}"/.ivy2/cache -name "ivydata-*.properties" -print -delete
 
       # Cache the ivy dependencies to the home directory.
     - name: Initialise Cache
@@ -40,6 +36,11 @@ jobs:
           ${{ runner.os }}-dependencies-
           ${{ runner.os }}-
           
+    # Before caching, print and delete all cached ivy properties
+    - name: Remove Ivy Properties
+      if: steps.cache-dependencies.outputs.cache-hit == 'true'
+      run: find "${HOME}"/.ivy2/cache -name "ivydata-*.properties" -print -delete
+
       # Update the project dependencies and run tests
     - name: Run Tests
       run: |

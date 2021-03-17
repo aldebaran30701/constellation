@@ -33,7 +33,6 @@ if [ -d "/var/opt/sonar-scanner-4.0.0.1744-linux" ];then
 fi
 mv sonar-scanner-4.0.0.1744-linux /var/opt/sonar-scanner
 export PATH="$PATH:/var/opt/sonar-scanner/bin"
-
 echo "Installation completed successfully."
 
 if [ ! -z $2 ]; then

@@ -44,7 +44,7 @@ jobs:
     - name: Update Dependencies
       run: |
         chmod +x /home/runner/work/constellation/constellation/githubutilities/update-dependencies.sh
-        bash update-dependencies.sh
+        bash githubutilities/update-dependencies.sh
         #docker pull "${RUNNER_IMAGE}"
         #docker run --mount "type=bind,source=/home/runner/work/constellation/constellation/,target=/root/constellation/" --mount "type=bind,source=${HOME}/.ivy2/cache,target=/root/.ivy2/cache" --workdir /root/constellation/ "${RUNNER_IMAGE}" githubutilities/update-dependencies.sh
 

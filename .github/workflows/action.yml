@@ -34,7 +34,7 @@ jobs:
         path: ${HOME}/.ivy2/cache
         key: ${{ runner.os }}-dependency-${{ env.cache-name }}-${{ hashFiles('CoreDependencies/src/ivy.xml') }}
           
-    # After caching, print to log
+    # After caching, print to logw
     - name: Remove Ivy Properties
       if: steps.cache-dependencies.outputs.cache-hit == 'true'
       run: |

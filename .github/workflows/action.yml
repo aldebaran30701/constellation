@@ -32,7 +32,7 @@ jobs:
         cache-name: cache-dependencies
       with:
         path: ${HOME}/.ivy2/cache
-        key: ${{ runner.os }}-dependencies-${{ env.cache-name }}-${{ hashFiles('CoreDependencies/src/ivy.xml') }}
+        key: ${{ runner.os }}-dependency-${{ env.cache-name }}-${{ hashFiles('CoreDependencies/src/ivy.xml') }}
           
     # After caching, print to log
     - name: Remove Ivy Properties

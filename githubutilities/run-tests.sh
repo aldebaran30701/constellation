@@ -7,7 +7,7 @@ title "Run Core Build"
 echo $PWD
 apt update
 apt-get install tree
-tree -a /root
+tree -a /root/.ivy2
 ant \
   -Dnbplatform.active.dir="${NETBEANS_HOME}" \
   -Dnbplatform.default.netbeans.dest.dir="${NETBEANS_HOME}" \
@@ -33,4 +33,4 @@ while IFS= read -r -d '' file; do
   java -jar "${JACOCO_HOME}/lib/jacococli.jar" report "${file}" --classfiles "${classfile}" --xml "${xml_output}"
 done < <(find . -iname "*jacoco.exec" -print0)
 
-tree -a /root
+tree -a /root/.ivy2

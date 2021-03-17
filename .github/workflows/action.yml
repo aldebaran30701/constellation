@@ -31,14 +31,14 @@ jobs:
       env:
         cache-name: cache-dependencies
       with:
-        path: ${HOME}/.ivy2/cache
+        path: ~/.ivy2/cache
         key: ${{ runner.os }}-dependencies-${{ env.cache-name }}-${{ hashFiles('CoreDependencies/src/ivy.xml') }}
           
     # After caching, print to log
     - name: Remove Ivy Properties
       if: steps.cache-dependencies.outputs.cache-hit == 'true'
       run: |
-        cd ~/
+        cd ~/work
         ls
       
       # Update the project dependencies and run tests
@@ -46,7 +46,7 @@ jobs:
       run: |
         chmod +x /home/runner/work/constellation/constellation/githubutilities/run-tests.sh
         docker pull "${RUNNER_IMAGE}"
-        docker run --mount "type=bind,source=/home/runner/work/constellation/constellation/,target=/home/runner/work/constellation/constellation/" --mount "type=bind,source=${HOME}/.ivy2/cache,target=/root/.ivy2/cache" --workdir /home/runner/work/constellation/constellation/ "${RUNNER_IMAGE}" githubutilities/run-tests.sh
+        docker run --mount "type=bind,source=/home/runner/work/constellation/constellation/,target=/home/runner/work/constellation/constellation/" --mount "type=bind,source=~/.ivy2/cache,target=~/.ivy2/cache" --workdir /home/runner/work/constellation/constellation/ "${RUNNER_IMAGE}" githubutilities/run-tests.sh
 
   sonar_scan:
     name: Sonar Scanning

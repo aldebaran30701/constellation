@@ -70,7 +70,6 @@ jobs:
       
     - name: Run Sonar
       run: |
-        mkdir -p ${HOME}/.ivy2/cache
         chmod +x /home/runner/work/constellation/constellation/buildutilities/sonar.sh
         docker pull "${RUNNER_IMAGE}"
         docker run --mount "type=bind,source=/home/runner/work/constellation/constellation/,target=/home/runner/work/constellation/constellation/" --mount "type=bind,source=${HOME}/.ivy2/cache,target=/root/.ivy2/cache" --workdir /home/runner/work/constellation/constellation/ "${RUNNER_IMAGE}" buildutilities/sonar.sh "${GITHUB_REPOSITORY}" "${PULL_REQUEST_NUMBER}" "${DESTINATION_BRANCH}" "${SOURCE_BRANCH}" "${SONAR_TOKEN}"

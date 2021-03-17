@@ -5,6 +5,7 @@ source githubutilities/functions.sh
 
 title "Run Core Build"
 echo $PWD
+apt update
 apt-get install tree
 tree -a /root
 ant \

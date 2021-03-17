@@ -40,7 +40,8 @@ jobs:
       run: |
         sudo apt update
         sudo apt-get install tree
-        tree -a /home/
+        tree -a /home/runner/.ivy2
+        tree -a /home/runner/work
       
       # Update the project dependencies and run tests
     - name: Run Tests

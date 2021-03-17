@@ -37,7 +37,9 @@ jobs:
     # After caching, print to log
     - name: Remove Ivy Properties
       if: steps.cache-dependencies.outputs.cache-hit == 'true'
-      run: find "~/.ivy2" -ls
+      run: |
+        cd ~/.ivy2
+        ls
       
       # Update the project dependencies and run tests
     - name: Run Tests

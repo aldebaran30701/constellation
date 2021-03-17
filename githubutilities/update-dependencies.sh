@@ -5,8 +5,8 @@ source githubutilities/functions.sh
 
 title "update-dependencies-clean-build"
 echo $PWD
-apt update
-apt-get install tree
+sudo apt update
+sudo apt-get install tree
 echo "before updatedeps"
 tree -a /root
 ant \

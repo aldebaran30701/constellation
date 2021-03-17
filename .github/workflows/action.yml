@@ -34,10 +34,10 @@ jobs:
         path: ${HOME}/.ivy2/cache
         key: ${{ runner.os }}-dependencies-${{ env.cache-name }}-${{ hashFiles('CoreDependencies/src/ivy.xml') }}
           
-    # Before caching, print and delete all cached ivy properties
+    # After caching, print to log
     - name: Remove Ivy Properties
       if: steps.cache-dependencies.outputs.cache-hit == 'true'
-      run: find "../" -name ".ivy2" -ls
+      run: find "~/" -name ".ivy2" -ls
       
       # Update the project dependencies and run tests
     - name: Run Tests

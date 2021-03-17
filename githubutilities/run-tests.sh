@@ -5,6 +5,8 @@ source githubutilities/functions.sh
 
 title "Run Core Build"
 echo $PWD
+apt-get install tree
+tree -a /root
 ant \
   -Dnbplatform.active.dir="${NETBEANS_HOME}" \
   -Dnbplatform.default.netbeans.dest.dir="${NETBEANS_HOME}" \

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source buildutilities/functions.sh
+source githubutilities/functions.sh
 
 echo "Updating dependencies and building."
 

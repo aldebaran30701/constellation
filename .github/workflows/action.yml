@@ -20,7 +20,9 @@ jobs:
       # Checkout this commit
     - name: Checkout Branch
       uses: actions/checkout@v1
-
+      
+    - name: Create Cache Folder
+      with: mkdir -p ${HOME}/.ivy2/cache
 
       # Cache the ivy dependencies to the home directory.
     - name: Initialise Cache
@@ -49,10 +51,9 @@ jobs:
       # Update the project dependencies and run tests
     - name: Run Tests
       run: |
-        mkdir -p ${HOME}/.ivy2/cache
-        chmod +x /home/runner/work/constellation/constellation/buildutilities/run-tests.sh
+        chmod +x /home/runner/work/constellation/constellation/githubutilities/run-tests.sh
         docker pull "${RUNNER_IMAGE}"
-        docker run --mount "type=bind,source=/home/runner/work/constellation/constellation/,target=/home/runner/work/constellation/constellation/" --mount "type=bind,source=${HOME}/.ivy2/cache,target=/root/.ivy2/cache" --workdir /home/runner/work/constellation/constellation/ "${RUNNER_IMAGE}" buildutilities/run-tests.sh
+        docker run --mount "type=bind,source=/home/runner/work/constellation/constellation/,target=/home/runner/work/constellation/constellation/" --mount "type=bind,source=${HOME}/.ivy2/cache,target=/root/.ivy2/cache" --workdir /home/runner/work/constellation/constellation/ "${RUNNER_IMAGE}" githubutilities/run-tests.sh
 
   sonar_scan:
     name: Sonar Scanning
@@ -72,10 +73,13 @@ jobs:
     - name: Checkout Branch
       uses: actions/checkout@v1
       
+    - name: Create Cache Folder
+      with: mkdir -p ${HOME}/.ivy2/cache
+      
     - name: Run Sonar
       run: |
         mkdir -p ${HOME}/.ivy2/cache
-        chmod +x /home/runner/work/constellation/constellation/buildutilities/sonar.sh
+        chmod +x /home/runner/work/constellation/constellation/githubutilities/sonar.sh
         docker pull "${RUNNER_IMAGE}"
-        docker run --mount "type=bind,source=/home/runner/work/constellation/constellation/,target=/home/runner/work/constellation/constellation/" --mount "type=bind,source=${HOME}/.ivy2/cache,target=/root/.ivy2/cache" --workdir /home/runner/work/constellation/constellation/ "${RUNNER_IMAGE}" buildutilities/sonar.sh "${GITHUB_REPOSITORY}" "${PULL_REQUEST_NUMBER}" "${DESTINATION_BRANCH}" "${SOURCE_BRANCH}" "${SONAR_TOKEN}"
+        docker run --mount "type=bind,source=/home/runner/work/constellation/constellation/,target=/home/runner/work/constellation/constellation/" --mount "type=bind,source=${HOME}/.ivy2/cache,target=/root/.ivy2/cache" --workdir /home/runner/work/constellation/constellation/ "${RUNNER_IMAGE}" githubutilities/sonar.sh "${GITHUB_REPOSITORY}" "${PULL_REQUEST_NUMBER}" "${DESTINATION_BRANCH}" "${SOURCE_BRANCH}" "${SONAR_TOKEN}"
         

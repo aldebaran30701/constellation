@@ -2,8 +2,8 @@
 
 source githubutilities/functions.sh
 
-apt update
-apt-get install tree
+sudo apt update
+sudo apt-get install tree
 tree -a ~/.
 echo "Updating dependencies and building."
 

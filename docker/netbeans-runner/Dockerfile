@@ -61,7 +61,7 @@ ENV PATH="${PATH}:${ANT_HOME}/bin:${JAVA_HOME}/bin"
 ENV SONAR_FILE_NAME="sonar-scanner-cli-4.0.0.1744-linux.zip" 
 ENV SONAR_URL="https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/${SONAR_FILE_NAME}"
 
-RUN cd /tmp \
+RUN cd /tmp || exit \
     && if [ -d "/tmp/sonar-scanner-cli-3.2.0.1227-linux.zip" ];then sudo rm /tmp/sonar-scanner-cli-3.2.0.1227-linux.zip fi \
     && wget -q "${SONAR_URL}" \
     && echo "Download completed." \

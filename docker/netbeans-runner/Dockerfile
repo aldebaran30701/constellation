@@ -11,8 +11,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 #ENV SONAR_URL="https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/${SONAR_FILE_NAME}"
 RUN cd /tmp
 RUN echo "we are now in business"
-RUN if [ -d "/tmp/sonar-scanner-cli-3.2.0.1227-linux.zip" ];then sudo rm /tmp/sonar-scanner-cli-3.2.0.1227-linux.zip fi \
-    && wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip \
+RUN wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip \
     && echo "Download completed." \
     && echo "Unziping downloaded file..." \
     && unzip sonar-scanner-cli-4.0.0.1744-linux.zip \

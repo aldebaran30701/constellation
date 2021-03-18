@@ -49,7 +49,10 @@ jobs:
         chmod +x /home/runner/work/constellation/constellation/githubutilities/run-tests.sh
         docker pull "${RUNNER_IMAGE}"
         docker run --mount "type=bind,source=/home/runner/work/constellation/constellation/,target=/home/runner/work/constellation/constellation/" --mount "type=bind,source=${HOME}/.ivy2/,target=/root/.ivy2/" --workdir /home/runner/work/constellation/constellation/ "${RUNNER_IMAGE}" githubutilities/run-tests.sh
-
+        sudo apt update
+        sudo apt-get install tree
+        tree -a /home/runner/.ivy2
+        tree -a /home/runner/work/constellation
   sonar_scan:
     name: Sonar Scanning
     runs-on: ubuntu-latest

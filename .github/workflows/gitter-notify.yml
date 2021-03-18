@@ -5,8 +5,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Send test message
 
-    #steps:
-    #- id: initial
+    steps:
+    - id: initial
     #  uses: juztcode/gitter-github-action@v1
     #  with:
     #    room-id: ${{ secrets.GITTER_ROOM_ID }}

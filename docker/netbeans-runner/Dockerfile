@@ -7,22 +7,22 @@ LABEL \
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 
-#ENV SONAR_FILE_NAME="sonar-scanner-cli-4.0.0.1744-linux.zip" 
-#ENV SONAR_URL="https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/${SONAR_FILE_NAME}"
+ENV SONAR_FILE_NAME="sonar-scanner-cli-4.0.0.1744-linux.zip" 
+ENV SONAR_URL="https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/${SONAR_FILE_NAME}"
 RUN cd /tmp
 RUN echo "we are now in business"
 RUN if [ -d "/tmp/sonar-scanner-cli-3.2.0.1227-linux.zip" ];then sudo rm /tmp/sonar-scanner-cli-3.2.0.1227-linux.zip fi \
-    && wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip \
+    && wget -q "${SONAR_URL}" \
     && echo "Download completed." \
     && echo "Unziping downloaded file..." \
-    && unzip sonar-scanner-cli-4.0.0.1744-linux.zip \
+    && unzip "${SONAR_FILE_NAME}" \
     && echo "Unzip completed." \
-    && rm sonar-scanner-cli-4.0.0.1744-linux.zip \
+    && rm "${SONAR_FILE_NAME}" \
     && echo "Installing to opt..." \
     && if [ -d "/var/opt/sonar-scanner-4.0.0.1744-linux" ];then rm -rf /var/opt/sonar-scanner-4.0.0.1744-linux fi \
     && mv sonar-scanner-4.0.0.1744-linux /var/opt/sonar-scanner \
     && export PATH="$PATH:/var/opt/sonar-scanner/bin" \
-    && echo "Installation completed successfully." 
+    && echo "Installation of ${SONAR_FILE_NAME} completed successfully." 
 
 RUN apt-get -y update \
     && apt-get install -y --no-install-recommends \

@@ -2,6 +2,9 @@
 
 source githubutilities/functions.sh
 
+sudo apt update
+sudo apt-get install tree
+tree -a ~/.
 echo "Updating dependencies and building."
 
 ant \

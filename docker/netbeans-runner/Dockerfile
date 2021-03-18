@@ -9,7 +9,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 #ENV SONAR_FILE_NAME="sonar-scanner-cli-4.0.0.1744-linux.zip"
 #ENV SONAR_URL="https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/${SONAR_FILE_NAME}"
-RUN cd /tmp
+RUN mkdir -p /root/newfolder
 RUN echo "we are now in business"
 RUN wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip \
     && echo "Download completed." \

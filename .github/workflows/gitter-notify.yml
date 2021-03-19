@@ -7,7 +7,7 @@ jobs:
 
     steps:
       - name: message
-        uses: juztcode/gitter-github-action@v1
+        uses: juztcode/gitter-github-action@v2
         with:
           room-id: ${{ secrets.GITTER_ROOM_ID }}
           token: ${{ secrets.GITTER_TOKEN }}

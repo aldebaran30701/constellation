@@ -12,7 +12,8 @@ ant \
   -Dbuild.compiler.debug=true update-dependencies-clean-build
 
 echo "Finished Updating dependencies and building."
-
+echo ${PATH}
+echo "${PATH}"
 title "Run Sonar Scanning"
 
 if [ ! -z $2 ]; then

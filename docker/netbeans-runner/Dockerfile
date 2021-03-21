@@ -16,6 +16,21 @@ RUN apt-get -y update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+RUN cd /tmp \
+    && echo "Downloading sonar-scanner....." \
+    && if [ -d "/tmp/sonar-scanner-cli-3.2.0.1227-linux.zip" ] ; then sudo rm /tmp/sonar-scanner-cli-3.2.0.1227-linux.zip ; fi \
+    && wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip \
+    && echo "Download completed." \
+    && echo "Unziping downloaded file..." \
+    && unzip sonar-scanner-cli-4.0.0.1744-linux.zip \
+    && echo "Unzip completed." \
+    && rm sonar-scanner-cli-4.0.0.1744-linux.zip \
+    && echo "Installing to opt..." \
+    && if [ -d "/var/opt/sonar-scanner-4.0.0.1744-linux" ] ; then rm -rf /var/opt/sonar-scanner-4.0.0.1744-linux ; fi \
+    && mv sonar-scanner-4.0.0.1744-linux /var/opt/sonar-scanner \
+    && export PATH="$PATH:/var/opt/sonar-scanner/bin" \
+    && echo "Installation completed successfully." 
+
 ENV ZULU_VERSION="zulu11.37.19-ca-fx-jdk11.0.6-linux_x64"
 ENV ZULU_CHECKSUM="f7720d2f3973c230f81b35dc9b36f72009416cf418a724f298c4513268b9e9e313744ff45f646e43a5e313ee1ef780cc3aa0232c22f36a30c8cde3db37427172  ${ZULU_VERSION}.tar.gz"
 

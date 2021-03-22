@@ -16,19 +16,23 @@ RUN apt-get -y update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN cd /tmp \
+ENV SONAR_ZIP_FILENAME="sonar-scanner-cli-4.0.0.1744-linux.zip" \
+    SONAR_FILENAME="sonar-scanner-4.0.0.1744-linux" \
+    SONAR_DOWNLOAD_DIR="/tmp" \
+    SONAR_HOME="/var/opt/sonar-scanner" 
+ENV SONAR_DOWNLOAD_URL="https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/${SONAR_ZIP_FILENAME}"
+
+RUN cd "${SONAR_DOWNLOAD_DIR}" \
     && echo "Downloading sonar-scanner....." \
-    && if [ -d "/tmp/sonar-scanner-cli-3.2.0.1227-linux.zip" ] ; then sudo rm /tmp/sonar-scanner-cli-3.2.0.1227-linux.zip ; fi \
-    && wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip \
-    && echo "Download completed." \
-    && echo "Unziping downloaded file..." \
-    && unzip sonar-scanner-cli-4.0.0.1744-linux.zip \
+    && if [ -d "/tmp/${SONAR_ZIP_FILENAME}" ] ; then sudo rm "${SONAR_DOWNLOAD_DIR}"/"${SONAR_ZIP_FILENAME}" ; fi \
+    && wget -q "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip" \
+    && echo "Download completed. Unziping downloaded file..." \
+    && unzip "${SONAR_ZIP_FILENAME}" \
     && echo "Unzip completed." \
-    && rm sonar-scanner-cli-4.0.0.1744-linux.zip \
-    && echo "Installing to opt..." \
-    && if [ -d "/var/opt/sonar-scanner-4.0.0.1744-linux" ] ; then rm -rf /var/opt/sonar-scanner-4.0.0.1744-linux ; fi \
-    && mv sonar-scanner-4.0.0.1744-linux /var/opt/sonar-scanner \
-    && export PATH="$PATH:/var/opt/sonar-scanner/bin" \
+    && rm "${SONAR_ZIP_FILENAME}" \
+    && echo "Installing to ${SONAR_HOME}" \
+    && if [ -d "/var/opt/${SONAR_FILENAME}" ] ; then rm -rf /var/opt/"${SONAR_FILENAME}" ; fi \
+    && mv "${SONAR_FILENAME}" "${SONAR_HOME}" \
     && echo "Installation completed successfully." 
 
 ENV ZULU_VERSION="zulu11.37.19-ca-fx-jdk11.0.6-linux_x64"
@@ -71,4 +75,4 @@ RUN mkdir -p ${JACOCO_HOME}/ \
 ENV ANT_HOME="${NETBEANS_HOME}/extide/ant" \
     JAVA_HOME="/usr/java/${ZULU_VERSION}" \
     JACOCO_AGENT="${JACOCO_HOME}/lib/jacocoagent.jar"
-ENV PATH="${PATH}:${ANT_HOME}/bin:${JAVA_HOME}/bin"
+ENV PATH="${PATH}:${ANT_HOME}/bin:${JAVA_HOME}/bin:${SONAR_HOME}/bin"

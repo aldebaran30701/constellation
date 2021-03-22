@@ -2,7 +2,7 @@
 
 source githubutilities/functions.sh
 
-echo "Updating dependencies and building."
+title "Updating dependencies and building"
 
 ant \
   -Dnbplatform.active.dir="${NETBEANS_HOME}" \
@@ -11,9 +11,6 @@ ant \
   -Dupdate.dependencies=true \
   -Dbuild.compiler.debug=true update-dependencies-clean-build
 
-echo "Finished Updating dependencies and building."
-echo ${PATH}
-echo "${PATH}"
 title "Run Sonar Scanning"
 
 if [ ! -z $2 ]; then
